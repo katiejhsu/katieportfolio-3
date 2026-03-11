@@ -525,6 +525,13 @@ export default function Portfolio() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
+        @media (max-width: 900px) {
+          .home-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .home-photo-container { order: -1; min-height: 380px !important; }
+          .home-title { font-size: clamp(2.5rem, 8vw, 4rem) !important; }
+          .home-divider { margin: 20px 0 40px !important; }
+        }
+
         body { background: #ffffff; }
         .grid-bg {
           background-color: #fce8ed;
@@ -609,29 +616,30 @@ export default function Portfolio() {
 
         {/* HOME */}
         <section id="home" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "120px 5vw 80px" }}>
-          <div style={{ maxWidth: 1000, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
+          <div className="home-grid" style={{ maxWidth: 1000, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
             <div>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }} className="fade-up">welcome to my portfolio</p>
-              <h1 style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)", fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em" }} className="fade-up d1">
+              <h1 className="home-title fade-up d1" style={{ fontSize: "clamp(3rem, 7vw, 5.5rem)", fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
                 Hi, I'm<br /><em style={{ color: "#c4778a" }}>Katie Hsu</em>
               </h1>
-              <div style={{ width: 60, height: 2, background: "#a8d5b0", margin: "20px 0 40px", borderRadius: 2 }} className="fade-up d2" />
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", lineHeight: 1.8, color: "#6a4c58", fontWeight: 400, marginBottom: 24 }} className="fade-up d2">
                 she/her<br />Informatics Major at UW Seattle<br />Teaching Assistant for Client Side Web Development
               </p>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", lineHeight: 1.8, color: "#7a5060", fontWeight: 400, marginBottom: 36 }} className="fade-up d3">
                 I'm a BS Informatics student with a minor in Data Science at the University of Washington, graduating June 2027. I love building thoughtful web experiences and diving deep into data to uncover meaningful insights.
               </p>
-              <div style={{ display: "flex", gap: 14 }} className="fade-up d4">
+              <div className="home-buttons fade-up d4" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <button onClick={() => scrollTo("projects")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "#e8a0b0", color: "#fff", border: "none", borderRadius: "100px", cursor: "pointer", boxShadow: "0 6px 20px rgba(196,119,138,0.22)", transition: "transform 0.2s" }} onMouseEnter={e => e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform="translateY(0)"}>View Projects</button>
                 <button onClick={() => scrollTo("socials")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "transparent", color: "#5d9970", border: "1.5px solid #a8d5b0", borderRadius: "100px", cursor: "pointer", transition: "all 0.25s" }} onMouseEnter={e => { e.currentTarget.style.background="#a8d5b0"; e.currentTarget.style.color="#fff"; }} onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#5d9970"; }}>Get In Touch</button>
               </div>
             </div>
 
-            <div style={{ position: "relative", width: "100%", minHeight: 420 }} className="fade-up d2">
-              <DraggablePhoto />
-              <DraggableBadge initialPos={{ x: 220, y: 280 }} style={{ border: "1.5px solid #c8e8cf", color: "#3a6047", boxShadow: "0 8px 24px rgba(107,191,130,0.15)" }}>🎓 UW iSchool</DraggableBadge>
-              <DraggableBadge initialPos={{ x: 0, y: 20 }} style={{ border: "1.5px solid #f9c8d4", color: "#c4778a", boxShadow: "0 8px 24px rgba(196,119,138,0.12)" }}>✨ Informatics + Data Science</DraggableBadge>
+            <div className="home-photo-container fade-up d2" style={{ position: "relative", width: "100%", minHeight: 420, display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <div style={{ position: "relative", width: 320, height: 320 }}>
+                <DraggablePhoto />
+                <DraggableBadge initialPos={{ x: 180, y: 260 }} style={{ border: "1.5px solid #c8e8cf", color: "#3a6047", boxShadow: "0 8px 24px rgba(107,191,130,0.15)" }}>🎓 UW iSchool</DraggableBadge>
+                <DraggableBadge initialPos={{ x: -40, y: 0 }} style={{ border: "1.5px solid #f9c8d4", color: "#c4778a", boxShadow: "0 8px 24px rgba(196,119,138,0.12)" }}>✨ Informatics + Data Science</DraggableBadge>
+              </div>
             </div>
           </div>
         </section>
