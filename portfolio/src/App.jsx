@@ -659,23 +659,24 @@ function FitTextLines({ lines, style }) {
   const measureRef = useRef(null);
   const [fontSizes, setFontSizes] = useState([]);
   const LINE_HEIGHT = 1.1;
+  const lastWidth = useRef(0);
 
   useEffect(() => {
-    const measure = () => {
+    const measure = (forceRun) => {
       const container = containerRef.current;
       const ruler = measureRef.current;
       if (!container || !ruler) return;
 
       const containerW = container.offsetWidth;
       const containerH = container.offsetHeight;
+      if (!forceRun && containerW === lastWidth.current) return;
+      lastWidth.current = containerW;
 
-      // Step 1: for each line, find the font-size that fills the width
       const widthBasedSizes = lines.map((line) => {
         ruler.style.fontSize = "100px";
         ruler.style.whiteSpace = "nowrap";
       const plainText = line.map(seg => {
           if (typeof seg === "string") return seg;
-          // Keyword components have a `word` prop; fallback to children
           return seg.props?.word ?? seg.props?.children ?? "";
         }).join("");
         ruler.textContent = plainText;
@@ -683,13 +684,10 @@ function FitTextLines({ lines, style }) {
         return (containerW / lineW) * 100;
       });
 
-      // Step 2: check if all lines fit in the container height at these sizes
-      // Total height = sum of (fontSize * LINE_HEIGHT) for all lines
       const totalH = widthBasedSizes.reduce((sum, fs) => sum + fs * LINE_HEIGHT, 0);
 
       let finalSizes = widthBasedSizes;
       if (containerH > 0 && totalH > containerH) {
-        // Scale all sizes down proportionally so they fit the height
         const scale = containerH / totalH;
         finalSizes = widthBasedSizes.map(fs => fs * scale);
       }
@@ -697,8 +695,8 @@ function FitTextLines({ lines, style }) {
       setFontSizes(finalSizes.map(fs => Math.floor(fs)));
     };
 
-    measure();
-    const ro = new ResizeObserver(measure);
+    measure(true);
+    const ro = new ResizeObserver(() => measure(false));
     if (containerRef.current) ro.observe(containerRef.current);
     return () => ro.disconnect();
   }, [lines]);
@@ -776,13 +774,16 @@ function ScaledPre({ text, style }) {
   const containerRef = useRef(null);
   const preRef = useRef(null);
   const [fontSize, setFontSize] = useState(16);
+  const lastWidth = useRef(0);
 
   useEffect(() => {
-    const fit = () => {
+    const fit = (forceRun) => {
       const container = containerRef.current;
       const pre = preRef.current;
       if (!container || !pre) return;
       const targetW = container.offsetWidth;
+      if (!forceRun && targetW === lastWidth.current) return;
+      lastWidth.current = targetW;
       let lo = 4, hi = 200, best = 8;
       for (let i = 0; i < 30; i++) {
         const mid = (lo + hi) / 2;
@@ -792,8 +793,8 @@ function ScaledPre({ text, style }) {
       }
       setFontSize(Math.floor(best));
     };
-    setTimeout(fit, 50);
-    const ro = new ResizeObserver(fit);
+    setTimeout(() => fit(true), 50);
+    const ro = new ResizeObserver(() => fit(false));
     if (containerRef.current) ro.observe(containerRef.current);
     return () => ro.disconnect();
   }, [text]);
@@ -813,6 +814,35 @@ function ScaledPre({ text, style }) {
       >
         {text}
       </pre>
+    </div>
+  );
+}
+
+function FrozenHeightName() {
+  const wrapRef = useRef(null);
+  const [lockedHeight, setLockedHeight] = useState(null);
+
+  useEffect(() => {
+    const lock = () => {
+      if (wrapRef.current) setLockedHeight(wrapRef.current.scrollHeight);
+    };
+    const t = setTimeout(lock, 120);
+    const onResize = () => {
+      setLockedHeight(null);
+      setTimeout(() => {
+        if (wrapRef.current) setLockedHeight(wrapRef.current.scrollHeight);
+      }, 120);
+    };
+    window.addEventListener("resize", onResize);
+    return () => { clearTimeout(t); window.removeEventListener("resize", onResize); };
+  }, []);
+
+  return (
+    <div
+      ref={wrapRef}
+      style={{ height: lockedHeight ?? "auto", overflow: "hidden", contain: "strict", width: "100%" }}
+    >
+      <CyclingName />
     </div>
   );
 }
@@ -882,13 +912,17 @@ function FitSingleLine({ children, style, splitAt }) {
   const textRef = useRef(null);
   const [fontSize, setFontSize] = useState(16);
   const [split, setSplit] = useState(false);
+  const lastWidth = useRef(0);
 
   useEffect(() => {
-    const fit = () => {
+    const fit = (forceRun) => {
       const container = containerRef.current;
       const text = textRef.current;
       if (!container || !text) return;
       const targetW = container.offsetWidth;
+      // Skip if width hasn't changed (name cycled but container didn't resize)
+      if (!forceRun && targetW === lastWidth.current) return;
+      lastWidth.current = targetW;
       text.style.whiteSpace = "nowrap";
       let lo = 8, hi = 400, best = 16;
       for (let i = 0; i < 30; i++) {
@@ -897,13 +931,12 @@ function FitSingleLine({ children, style, splitAt }) {
         if (text.scrollWidth <= targetW) { best = mid; lo = mid; }
         else { hi = mid; }
       }
-      // If best font size is too small and we have a split point, go two lines
       const shouldSplit = splitAt && best < 40;
       setSplit(shouldSplit);
       setFontSize(Math.floor(best));
     };
-    fit();
-    const ro = new ResizeObserver(fit);
+    fit(true); // always run on mount / children change
+    const ro = new ResizeObserver(() => fit(false));
     if (containerRef.current) ro.observe(containerRef.current);
     return () => ro.disconnect();
   }, [children, splitAt]);
@@ -1557,7 +1590,7 @@ export default function Portfolio() {
 
         @media (max-width: 900px) {
           .home-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .home-photo-container { order: -1; min-height: 380px !important; align-self: auto !important; justify-content: center !important; width: 100% !important; }
+          .home-photo-container { order: -1; min-height: 380px !important; justify-content: center !important; }
           .home-title { font-size: clamp(2.5rem, 8vw, 4rem) !important; }
           .home-divider { margin: 20px 0 40px !important; }
         }
@@ -1668,15 +1701,13 @@ export default function Portfolio() {
           <span className="sp4" style={{ position: "absolute", bottom: "12%", right: "3%", fontSize: "clamp(0.6rem, 1.5vw, 1rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp1" style={{ position: "absolute", bottom: "28%", left: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp2" style={{ position: "absolute", bottom: "26%", right: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#e8a0b0", pointerEvents: "none" }}>✦</span>
-          <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "start" }}>
+          <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "center" }}>
             <div>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }} className="fade-up">welcome to my portfolio</p>
               <div style={{ marginBottom: 52 }}>
                 <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: 0 }}>
                   <span style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}>Hi, I'm</span><br />
-                  <div style={{ height: "clamp(120px, 18vw, 220px)", overflow: "hidden" }}>
-                    <CyclingName />
-                  </div>
+                  <FrozenHeightName />
                 </h1>
               </div>
               <div className="fade-up d2" style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24, marginTop: 0 }}>
