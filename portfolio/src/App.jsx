@@ -1411,6 +1411,33 @@ function RainbowKatieButton({ onClick }) {
     </button>
   );
 }
+function RainbowNavHeart({ label, isActive, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const [colorIndex, setColorIndex] = useState(0);
+
+  useEffect(() => {
+    if (!hovered) { setColorIndex(0); return; }
+    const id = setInterval(() => setColorIndex(i => (i + 1) % RAINBOW_COLORS.length), 160);
+    return () => clearInterval(id);
+  }, [hovered]);
+
+  const fill = hovered ? RAINBOW_COLORS[colorIndex] : (isActive ? "#c4556e" : "#e8a0b0");
+
+  return (
+    <button
+      className={"nav-heart" + (isActive ? " active" : "")}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <svg viewBox="0 0 68 60" xmlns="http://www.w3.org/2000/svg">
+        <path d="M34 54 C33 53 4 37 4 18 C4 8 12 2 21 2 C27 2 32 6 34 10 C36 6 41 2 47 2 C56 2 64 8 64 18 C64 37 35 53 34 54Z" fill={fill} style={{ transition: hovered ? "fill 0.12s ease" : "fill 0.4s ease" }}/>
+      </svg>
+      <span>{label}</span>
+    </button>
+  );
+}
+
 function SkillCarousel() {
   const [active, setActive] = useState(0);
   const [prev, setPrev] = useState(null);
@@ -1734,7 +1761,7 @@ export default function Portfolio() {
           </div>
         </section>
         {/* EXPERIENCE */}
-        <section id="experience" style={{ padding: "100px 5vw", borderTop: "1px solid #f0d8de" }}>
+        <section id="experience" style={{ padding: "100px 5vw", backgroundColor: "#ffddea", backgroundImage: "radial-gradient(circle, #ffb6d1 3.5px, transparent 3.5px)", backgroundSize: "52px 52px", borderTop: "1px solid #f0d8de" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <ScrollReveal delay={0}>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }}>where i've worked</p>
@@ -1766,6 +1793,8 @@ export default function Portfolio() {
                   date: "May 2022 – Present",
                   bullets: [
                     "Ensure safety at pools with over 30 patrons, utilizing problem-solving and risk assessment skills.",
+                    "Track student progress and analyze improvement rates to refine teaching methods.",
+                    "Communicate effectively with coworkers, managers, and patrons to ensure a safe and engaging environment.",
                   ],
                   tags: ["Lifeguarding", "Swim Instruction", "Leadership", "Safety"],
                 },
@@ -1799,7 +1828,7 @@ export default function Portfolio() {
         </section>
 
         {/* SOCIALS */}
-        <section id="socials" style={{ padding: "100px 5vw", backgroundColor: "#ffddea", backgroundImage: "radial-gradient(circle, #ffb6d1 3.5px, transparent 3.5px)", backgroundSize: "52px 52px", borderTop: "1px solid #f0d8de" }}>
+        <section id="socials" style={{ padding: "100px 5vw", borderTop: "1px solid #f0d8de" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <ScrollReveal delay={0}>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }}>let's connect</p>
@@ -1833,7 +1862,7 @@ export default function Portfolio() {
         </section>
 
 
-        <footer style={{ padding: "32px", textAlign: "center", borderTop: "1px solid #f0d8de" }}>
+        <footer style={{ padding: "32px", textAlign: "center", borderTop: "1px solid #f0d8de", backgroundColor: "#ffddea", backgroundImage: "radial-gradient(circle, #ffb6d1 3.5px, transparent 3.5px)", backgroundSize: "52px 52px" }}>
           <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#b08090", fontWeight: 300 }}>designed &amp; built with &lt;3 by katie hsu · 2026</p>
         </footer>
 
