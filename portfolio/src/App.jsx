@@ -8,6 +8,7 @@ import paddleImg from "./assets/paddle.jpg";
 import hikingImg from "./assets/hiking.jpg";
 import trailImg from "./assets/trail.jpg";
 import swimImg from "./assets/swim.jpg";
+import yogaImg from "./assets/yoga.jpg";
 
 const PHOTO_URLS = [
   beachImg,
@@ -36,7 +37,7 @@ const projects = [
 const socials = [
   { name: "LinkedIn", handle: "@katiejhsu", href: "https://www.linkedin.com/in/katiejhsu/", emoji: "💼", desc: "Let's connect professionally" },
   { name: "Instagram", handle: "@katiejhsu", href: "https://www.instagram.com/katiejhsu/", emoji: "📸", desc: "Follow my adventures" },
-  { name: "GitHub", handle: "@katiejhsu", href: "https://github.com/katiejhsu", emoji: "🐙", desc: "Check out my code" },
+  { name: "GitHub", handle: "@katiejhsu", href: "#", emoji: "🐙", desc: "Check out my code" },
   { name: "Email", handle: "katiejhsu@gmail.com", href: "mailto:katiejhsu@gmail.com", emoji: "✉️", desc: "Shoot me a message" },
 ];
 
@@ -1019,13 +1020,14 @@ function FunZoneModal({ onClose }) {
     hiking: hikingImg,
     "trail running": trailImg,
     swimming: swimImg,
+    yoga: yogaImg,
   };
 
   const activeImg = hoveredKeyword ? keywordImages[hoveredKeyword] : null;
 
   const plainLines = [
     "when i'm not", "creating websites", "or playing with", "data, i'm either",
-    "out paddleboarding", "or swimming", "or hiking", "or doing yoga", "or trail running",
+    "out paddleboarding", "or swimming", "or hiking", "or yoga", "or trail running",
   ];
 
   const computeLayout = useCallback(() => {
@@ -1078,7 +1080,7 @@ function FunZoneModal({ onClose }) {
     ["out ", <Keyword key="pb" word="paddleboarding" id="paddleboarding" />],
     ["or ", <Keyword key="sw" word="swimming" id="swimming" />],
     ["or ", <Keyword key="hk" word="hiking" id="hiking" />],
-    ["or doing yoga"],
+    ["or doing ", <Keyword key="yg" word="yoga" id="yoga" />],
     ["or ", <Keyword key="tr" word="trail running" id="trail running" />],
   ];
   const textStyle = { fontFamily: "Cormorant Garamond, Georgia, serif", fontWeight: 400, fontStyle: "italic", letterSpacing: "0.01em", color: "#fce8ed" };
