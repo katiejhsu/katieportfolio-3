@@ -666,12 +666,10 @@ function FitTextLines({ lines, style }) {
       const container = containerRef.current;
       const ruler = measureRef.current;
       if (!container || !ruler) return;
-
       const containerW = container.offsetWidth;
       const containerH = container.offsetHeight;
       if (!forceRun && containerW === lastWidth.current) return;
       lastWidth.current = containerW;
-
       const widthBasedSizes = lines.map((line) => {
         ruler.style.fontSize = "100px";
         ruler.style.whiteSpace = "nowrap";
@@ -683,18 +681,14 @@ function FitTextLines({ lines, style }) {
         const lineW = ruler.scrollWidth;
         return (containerW / lineW) * 100;
       });
-
       const totalH = widthBasedSizes.reduce((sum, fs) => sum + fs * LINE_HEIGHT, 0);
-
       let finalSizes = widthBasedSizes;
       if (containerH > 0 && totalH > containerH) {
         const scale = containerH / totalH;
         finalSizes = widthBasedSizes.map(fs => fs * scale);
       }
-
       setFontSizes(finalSizes.map(fs => Math.floor(fs)));
     };
-
     measure(true);
     const ro = new ResizeObserver(() => measure(false));
     if (containerRef.current) ro.observe(containerRef.current);
@@ -702,7 +696,7 @@ function FitTextLines({ lines, style }) {
   }, [lines]);
 
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100vh", overflow: "hidden" }}>
+    <div ref={containerRef} style={{ width: "100%", height: "100%", overflow: "hidden" }}>
       <div ref={measureRef} style={{ position: "absolute", visibility: "hidden", pointerEvents: "none", fontFamily: style?.fontFamily, fontWeight: style?.fontWeight, fontStyle: style?.fontStyle, letterSpacing: style?.letterSpacing }} />
       {lines.map((line, i) => (
         <div key={i} style={{ ...style, fontSize: (fontSizes[i] || 16) + "px", whiteSpace: "nowrap", lineHeight: LINE_HEIGHT, display: "block", width: "100%" }}>
@@ -821,27 +815,15 @@ function ScaledPre({ text, style }) {
 function FrozenHeightName() {
   const wrapRef = useRef(null);
   const [lockedHeight, setLockedHeight] = useState(null);
-
   useEffect(() => {
-    const lock = () => {
-      if (wrapRef.current) setLockedHeight(wrapRef.current.scrollHeight);
-    };
+    const lock = () => { if (wrapRef.current) setLockedHeight(wrapRef.current.scrollHeight); };
     const t = setTimeout(lock, 120);
-    const onResize = () => {
-      setLockedHeight(null);
-      setTimeout(() => {
-        if (wrapRef.current) setLockedHeight(wrapRef.current.scrollHeight);
-      }, 120);
-    };
+    const onResize = () => { setLockedHeight(null); setTimeout(() => { if (wrapRef.current) setLockedHeight(wrapRef.current.scrollHeight); }, 120); };
     window.addEventListener("resize", onResize);
     return () => { clearTimeout(t); window.removeEventListener("resize", onResize); };
   }, []);
-
   return (
-    <div
-      ref={wrapRef}
-      style={{ height: lockedHeight ?? "auto", overflow: "hidden", contain: "strict", width: "100%" }}
-    >
+    <div ref={wrapRef} style={{ height: lockedHeight ?? "auto", overflow: "hidden", contain: "strict", width: "100%" }}>
       <CyclingName />
     </div>
   );
@@ -1029,6 +1011,7 @@ function ProjectsWithFilter() {
 function FunZoneModal({ onClose }) {
   const [hoveredKeyword, setHoveredKeyword] = useState(null);
   const [panelWidth, setPanelWidth] = useState(null);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 700);
   const rulerRef = useRef(null);
 
   const keywordImages = {
@@ -1041,18 +1024,14 @@ function FunZoneModal({ onClose }) {
   const activeImg = hoveredKeyword ? keywordImages[hoveredKeyword] : null;
 
   const plainLines = [
-    "when i'm not",
-    "creating websites",
-    "or playing with",
-    "data, i'm either",
-    "out paddleboarding",
-    "or swimming",
-    "or hiking",
-    "or doing yoga",
-    "or trail running",
+    "when i'm not", "creating websites", "or playing with", "data, i'm either",
+    "out paddleboarding", "or swimming", "or hiking", "or doing yoga", "or trail running",
   ];
 
-  const computePanelWidth = useCallback(() => {
+  const computeLayout = useCallback(() => {
+    const mobile = window.innerWidth < 700;
+    setIsMobile(mobile);
+    if (mobile) { setPanelWidth(null); return; }
     const ruler = rulerRef.current;
     if (!ruler) return;
     const vh = window.innerHeight;
@@ -1062,173 +1041,94 @@ function FunZoneModal({ onClose }) {
     ruler.style.fontStyle = "italic";
     ruler.style.whiteSpace = "nowrap";
     ruler.style.fontSize = REF + "px";
-    const naturalWidths = plainLines.map(text => {
-      ruler.textContent = text;
-      return ruler.scrollWidth;
-    });
-    // All lines fill height: W = vh / (LINE_HEIGHT * REF * sum(1/nw_i))
+    const naturalWidths = plainLines.map(text => { ruler.textContent = text; return ruler.scrollWidth; });
     const sumInv = naturalWidths.reduce((acc, nw) => acc + 1 / nw, 0);
-    const W = vh / (LINE_HEIGHT * REF * sumInv);
-    setPanelWidth(Math.ceil(W) + 48);
+    setPanelWidth(Math.ceil(vh / (LINE_HEIGHT * REF * sumInv)) + 48);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    const t = setTimeout(computePanelWidth, 50);
-    window.addEventListener("resize", computePanelWidth);
-    return () => {
-      document.body.style.overflow = "";
-      clearTimeout(t);
-      window.removeEventListener("resize", computePanelWidth);
-    };
-  }, [computePanelWidth]);
+    const t = setTimeout(computeLayout, 50);
+    window.addEventListener("resize", computeLayout);
+    return () => { document.body.style.overflow = ""; clearTimeout(t); window.removeEventListener("resize", computeLayout); };
+  }, [computeLayout]);
 
-  const Keyword = ({ word, id }) => (
-    <span
-      onMouseEnter={() => setHoveredKeyword(id)}
-      onMouseLeave={() => setHoveredKeyword(null)}
-      style={{
-        color: hoveredKeyword === id ? "#fff" : "#fce8ed",
-        textDecoration: "underline",
-        textUnderlineOffset: "4px",
-        textDecorationColor: "rgba(252,232,237,0.5)",
-        cursor: "default",
-        transition: "color 0.2s",
-      }}
-    >
-      {word}
-    </span>
-  );
+  const Keyword = ({ word, id }) => {
+    const active = hoveredKeyword === id;
+    return (
+      <span
+        onClick={() => setHoveredKeyword(active ? null : id)}
+        onMouseEnter={() => !isMobile && setHoveredKeyword(id)}
+        onMouseLeave={() => !isMobile && setHoveredKeyword(null)}
+        style={{
+          color: active ? "#fff" : "#fce8ed",
+          textDecoration: "underline",
+          textUnderlineOffset: "4px",
+          textDecorationColor: active ? "rgba(255,255,255,0.7)" : "rgba(252,232,237,0.5)",
+          cursor: "pointer",
+          transition: "color 0.2s",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >{word}</span>
+    );
+  };
+
+  const textLines = [
+    ["when i'm not"], ["creating websites"], ["or playing with"], ["data, i'm either"],
+    ["out ", <Keyword key="pb" word="paddleboarding" id="paddleboarding" />],
+    ["or ", <Keyword key="sw" word="swimming" id="swimming" />],
+    ["or ", <Keyword key="hk" word="hiking" id="hiking" />],
+    ["or doing yoga"],
+    ["or ", <Keyword key="tr" word="trail running" id="trail running" />],
+  ];
+  const textStyle = { fontFamily: "Cormorant Garamond, Georgia, serif", fontWeight: 400, fontStyle: "italic", letterSpacing: "0.01em", color: "#fce8ed" };
+
+  if (isMobile) {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", flexDirection: "column", animation: "fadeInUp 0.35s cubic-bezier(.16,1,.3,1) both" }}>
+        {/* Pink text — top 45vh, height: 100% so FitTextLines fills it correctly */}
+        <div style={{ height: "45vh", background: "#c4556e", padding: "0 20px", boxSizing: "border-box", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+          <FitTextLines style={textStyle} lines={textLines} />
+        </div>
+        {/* Photo panel — remaining height */}
+        <div style={{ flex: 1, background: "#fff", padding: "16px 24px 24px", boxSizing: "border-box", display: "flex", flexDirection: "column", overflowY: "auto", position: "relative" }}>
+          <button onClick={onClose} style={{ position: "absolute", top: 12, right: 16, background: "none", border: "none", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "#b08090", letterSpacing: "0.04em", textTransform: "uppercase", padding: "6px 10px", borderRadius: 100 }}>close ✕</button>
+          <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.65rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 6, marginTop: 4 }}>just for fun</p>
+          <h2 style={{ fontSize: "clamp(1.3rem, 5vw, 2rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif", marginBottom: 6 }}>
+            <em style={{ color: "#c4778a" }}>get to know me! ✨</em>
+          </h2>
+          <div style={{ width: 40, height: 2, background: "#e8a0b0", margin: "10px 0 14px", borderRadius: 2 }} />
+          <div style={{ borderRadius: 16, background: "#fce8ed", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flex: 1, minHeight: 120 }}>
+            {activeImg
+              ? <img key={hoveredKeyword} src={activeImg} alt={hoveredKeyword} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: 16, animation: "fadeInUp 0.3s ease both" }} />
+              : <p style={{ fontFamily: "Cormorant Garamond, Georgia, serif", fontStyle: "italic", fontSize: "1rem", color: "#c4778a", textAlign: "center", padding: "24px 16px" }}>tap a keyword ↑</p>
+            }
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 500,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        animation: "fadeInUp 0.35s cubic-bezier(.16,1,.3,1) both",
-      }}
-    >
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", animation: "fadeInUp 0.35s cubic-bezier(.16,1,.3,1) both" }}>
       <div ref={rulerRef} style={{ position: "fixed", top: -9999, left: 0, visibility: "hidden", pointerEvents: "none" }} />
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          width: "100vw",
-          height: "100vh",
-          overflow: "hidden",
-          position: "relative",
-          animation: "fadeInUp 0.4s cubic-bezier(.16,1,.3,1) both",
-          display: "flex",
-        }}
-      >
-        {/* LEFT HALF — dark pink bg, width hugs text */}
-        <div style={{
-          width: panelWidth ? panelWidth + "px" : "50vw",
-          height: "100vh",
-          background: "#c4556e",
-          padding: "0 24px",
-          boxSizing: "border-box",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          overflow: "hidden",
-          flexShrink: 0,
-          position: "sticky",
-          top: 0,
-          alignSelf: "flex-start",
-          transition: "width 0.25s ease",
-        }}>
-          <FitTextLines
-            style={{
-              fontFamily: "Cormorant Garamond, Georgia, serif",
-              fontWeight: 400,
-              fontStyle: "italic",
-              letterSpacing: "0.01em",
-              color: "#fce8ed",
-            }}
-            lines={[
-              ["when i'm not"],
-              ["creating websites"],
-              ["or playing with"],
-              ["data, i'm either"],
-              ["out ", <Keyword key="pb" word="paddleboarding" id="paddleboarding" />],
-              ["or ", <Keyword key="sw" word="swimming" id="swimming" />],
-              ["or ", <Keyword key="hk" word="hiking" id="hiking" />],
-              ["or doing yoga"],
-              ["or ", <Keyword key="tr" word="trail running" id="trail running" />],
-            ]}
-          />
+      <div onClick={e => e.stopPropagation()} style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "relative", display: "flex" }}>
+        <div style={{ width: panelWidth ? panelWidth + "px" : "50vw", height: "100vh", background: "#c4556e", padding: "0 24px", boxSizing: "border-box", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden", flexShrink: 0, position: "sticky", top: 0, alignSelf: "flex-start", transition: "width 0.25s ease" }}>
+          <FitTextLines style={textStyle} lines={textLines} />
         </div>
-
-        {/* RIGHT HALF — photo viewer */}
-        <div style={{
-          flex: 1,
-          maxHeight: "100vh",
-          background: "#fff",
-          padding: "32px 48px",
-          boxSizing: "border-box",
-          display: "flex",
-          flexDirection: "column",
-          overflowY: "scroll",
-          position: "relative",
-        }}>
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            style={{
-              position: "absolute", top: 20, right: 20,
-              background: "none", border: "none", cursor: "pointer",
-              fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
-              color: "#b08090", letterSpacing: "0.04em", textTransform: "uppercase",
-              padding: "6px 12px", borderRadius: 100,
-              transition: "background 0.2s",
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = "#fce8ed"}
-            onMouseLeave={e => e.currentTarget.style.background = "none"}
-          >
-            close ✕
-          </button>
-
+        <div style={{ flex: 1, maxHeight: "100vh", background: "#fff", padding: "32px 48px", boxSizing: "border-box", display: "flex", flexDirection: "column", overflowY: "scroll", position: "relative" }}>
+          <button onClick={onClose} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#b08090", letterSpacing: "0.04em", textTransform: "uppercase", padding: "6px 12px", borderRadius: 100, transition: "background 0.2s" }}
+            onMouseEnter={e => e.currentTarget.style.background = "#fce8ed"} onMouseLeave={e => e.currentTarget.style.background = "none"}>close ✕</button>
           <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 10 }}>just for fun</p>
           <h2 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif", marginBottom: 8 }}>
             <em style={{ color: "#c4778a" }}>get to know me a little more! ✨</em>
           </h2>
           <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "16px 0 28px", borderRadius: 2 }} />
-
-          {/* Photo viewer — resizes to natural image dimensions */}
-          <div style={{
-            borderRadius: 20,
-            background: "#fce8ed",
-            overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: 200,
-          }}>
-            {activeImg ? (
-              <img
-                key={hoveredKeyword}
-                src={activeImg}
-                alt={hoveredKeyword}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  display: "block",
-                  borderRadius: 20,
-                  animation: "fadeInUp 0.3s ease both",
-                }}
-              />
-            ) : (
-              <p style={{
-                fontFamily: "Cormorant Garamond, Georgia, serif",
-                fontStyle: "italic",
-                fontSize: "1.2rem",
-                color: "#c4778a",
-                textAlign: "center",
-                padding: "32px 24px",
-              }}>
-                hover over a keyword ←
-              </p>
-            )}
+          <div style={{ borderRadius: 20, background: "#fce8ed", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 200 }}>
+            {activeImg
+              ? <img key={hoveredKeyword} src={activeImg} alt={hoveredKeyword} style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, animation: "fadeInUp 0.3s ease both" }} />
+              : <p style={{ fontFamily: "Cormorant Garamond, Georgia, serif", fontStyle: "italic", fontSize: "1.2rem", color: "#c4778a", textAlign: "center", padding: "32px 24px" }}>hover over a keyword ←</p>
+            }
           </div>
         </div>
       </div>
@@ -1510,9 +1410,11 @@ function RainbowKatieButton({ onClick }) {
 function SkillCarousel() {
   const [active, setActive] = useState(0);
   const [prev, setPrev] = useState(null);
-  const [dir, setDir] = useState(1); // 1 = forward, -1 = back
+  const [dir, setDir] = useState(1);
   const [animating, setAnimating] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [cardHeight, setCardHeight] = useState(null);
+  const outerRef = useRef(null);
   const intervalRef = useRef(null);
   const total = SKILL_CARDS.length;
 
@@ -1529,17 +1431,38 @@ function SkillCarousel() {
 
   useEffect(() => {
     clearInterval(intervalRef.current);
-    if (!paused) {
-      intervalRef.current = setInterval(() => advance(1), 2400);
-    }
+    if (!paused) intervalRef.current = setInterval(() => advance(1), 2400);
     return () => clearInterval(intervalRef.current);
   }, [paused, active, animating]);
+
+  useEffect(() => {
+    if (!outerRef.current) return;
+    const stage = outerRef.current.querySelector("[data-stage]");
+    if (!stage) return;
+    const stageW = stage.offsetWidth;
+    const cardW = (stageW - 8) / 2; // two cards with 8px gap
+
+    const tmp = document.createElement("div");
+    tmp.style.cssText = `position:fixed;visibility:hidden;pointer-events:none;top:-9999px;left:0;display:flex;flex-direction:column;gap:8px`;
+    document.body.appendChild(tmp);
+
+    SKILL_CARDS.forEach(card => {
+      const el = document.createElement("div");
+      el.style.cssText = `width:${cardW}px;background:#fff;border:1.5px solid #e8a0b0;border-radius:18px;padding:16px 18px;box-sizing:border-box;font-family:Inter,sans-serif;font-size:0.76rem;line-height:1.6`;
+      el.innerHTML = `<div style="font-size:1.6rem;margin-bottom:8px">${card.emoji}</div><div style="font-weight:600;font-size:0.78rem;margin-bottom:6px">${card.label}</div><p style="margin:0;font-size:0.76rem;line-height:1.6">${card.desc}</p>`;
+      tmp.appendChild(el);
+    });
+
+    const max = Math.max(...Array.from(tmp.children).map(el => el.offsetHeight));
+    document.body.removeChild(tmp);
+    if (max > 0) setCardHeight(max);
+  }, []);
 
   const go = (direction) => { setPaused(true); advance(direction); };
   const pick = (i) => { if (i === active) return; setPaused(true); advance(i > active ? 1 : -1, i); };
 
   return (
-    <div style={{ position: "relative", width: "100%" }}>
+    <div ref={outerRef} style={{ position: "relative", width: "100%" }}>
       <style>{`
         @keyframes slideInRight { from { opacity: 0; transform: translateX(38px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
         @keyframes slideInLeft  { from { opacity: 0; transform: translateX(-38px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
@@ -1552,34 +1475,28 @@ function SkillCarousel() {
       `}</style>
 
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        {/* Left arrow */}
         <button onClick={() => go(-1)} style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#c4778a", fontSize: "1.4rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", padding: "0 4px" }}
           onMouseEnter={e => { e.currentTarget.style.color = "#e8a0b0"; }}
           onMouseLeave={e => { e.currentTarget.style.color = "#c4778a"; }}>‹</button>
 
-        {/* Card stage — two cards side by side */}
-        <div style={{ flex: 1, position: "relative", height: 160, overflow: "hidden" }}>
-          {/* Exiting pair */}
+        <div data-stage="1" style={{ flex: 1, position: "relative", height: cardHeight ?? undefined, overflow: cardHeight ? "hidden" : undefined }}>
           {prev !== null && (
             <div key={`exit-${prev}`} className={dir === 1 ? "skill-exit-fwd" : "skill-exit-back"} style={{ position: "absolute", inset: 0, display: "flex", gap: 8 }}>
-              <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[prev]} /></div>
-              <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[(prev + 1) % total]} /></div>
+              <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[prev]} height={cardHeight} /></div>
+              <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[(prev + 1) % total]} height={cardHeight} /></div>
             </div>
           )}
-          {/* Entering pair */}
-          <div key={`enter-${active}`} className={animating ? (dir === 1 ? "skill-enter-fwd" : "skill-enter-back") : ""} style={{ position: "absolute", inset: 0, display: "flex", gap: 8 }}>
-            <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[active]} /></div>
-            <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[(active + 1) % total]} /></div>
+          <div key={`enter-${active}`} className={animating ? (dir === 1 ? "skill-enter-fwd" : "skill-enter-back") : ""} style={{ position: cardHeight ? "absolute" : "relative", inset: cardHeight ? 0 : undefined, display: "flex", gap: 8 }}>
+            <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[active]} height={cardHeight} /></div>
+            <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[(active + 1) % total]} height={cardHeight} /></div>
           </div>
         </div>
 
-        {/* Right arrow */}
         <button onClick={() => go(1)} style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#c4778a", fontSize: "1.4rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", padding: "0 4px" }}
           onMouseEnter={e => { e.currentTarget.style.color = "#e8a0b0"; }}
           onMouseLeave={e => { e.currentTarget.style.color = "#c4778a"; }}>›</button>
       </div>
 
-      {/* Dots */}
       <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 12 }}>
         {SKILL_CARDS.map((_, i) => (
           <div key={i} onClick={() => pick(i)} style={{ width: i === active ? 18 : 7, height: 7, borderRadius: 100, background: i === active ? "#c4778a" : "#f9c8d4", transition: "all 0.3s", cursor: "pointer" }} />
@@ -1595,9 +1512,9 @@ function SkillCarousel() {
   );
 }
 
-function SkillCard({ card }) {
+function SkillCard({ card, height }) {
   return (
-    <div style={{ width: "100%", height: "100%", background: "#fff", border: "1.5px solid #e8a0b0", borderRadius: 18, padding: "16px 18px", boxShadow: "0 8px 28px rgba(180,120,140,0.13)", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
+    <div style={{ width: "100%", height: height ?? "auto", background: "#fff", border: "1.5px solid #e8a0b0", borderRadius: 18, padding: "16px 18px", boxShadow: "0 8px 28px rgba(180,120,140,0.13)", display: "flex", flexDirection: "column", justifyContent: "flex-start", boxSizing: "border-box" }}>
       <div style={{ fontSize: "1.6rem", marginBottom: 8 }}>{card.emoji}</div>
       <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.78rem", color: "#6b3a2a", marginBottom: 6, letterSpacing: "0.01em" }}>{card.label}</div>
       <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.76rem", lineHeight: 1.6, color: "#7a5060", margin: 0 }}>{card.desc}</p>
