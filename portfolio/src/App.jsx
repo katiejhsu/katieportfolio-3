@@ -715,6 +715,216 @@ function FitTextLines({ lines, style }) {
   );
 }
 
+
+const ASCII_KATIE_HSU_FANCY = `.--.   .--.     ____   ,---------. .-./\`)     .-''-.          .---.  .---.    .-'''-. ___    _  
+|  | _/  /    .'  __ \`.\          \\ .-.')  .'_ _   \`         |   |  |_ _|   / _     \`.'   |  | | 
+| (\`' ) /    /   '  \\  \`\`--.  ,---'/ \`-' \\ / ( \` )   '        |   |  ( ' )  (\`' )/\`--'|   .'  | | 
+|(_ ()_)     |___|  /  |   |   \\    \`-'\`"\`. (_ o _)  |        |   '-(_{;}_)(_ o _).   .'  '_  | | 
+| (_,_)   __    _.-\`   |   :_ _:    .---. |  (_,_)___|        |      (_,_)  (_,_). '. '   ( \\.-.| 
+|  |\ \\ |  |.'   _    |  (_(=)_)   |   | '  \\   .---.        | _ _--.   | .---.  \\  :' (\`. _\` /| 
+|  | \\ \`'   /|  _( )_  |   (_I_)    |   |  \\  \`-'    /        |( ' ) |   | \\    \`-'  || (_ (_) _) 
+|  |  \\    / \\ (_ o _) /   (_I_)    |   |   \\       /         (_{;}_)|   |  \\       /  \\ /  . \\ / 
+\`--'   \`'-'   '.(_,_).'    '---'    '---'    \`'-..-'          '(_,_) '---'   \`-...-'    \`\`-'\`-''`;
+
+const ASCII_KATIE_HSU_CURSIVE = `     .                          .--.      __.....__                  .                               
+   .'|                          |__|  .-''         '.              .'|                               
+ .'  |                      .|  .--. /     .-''"'-.  \`.           <  |                               
+<    |            __      .' |_ |  |/     /________\\   \\           | |                               
+ |   | ____    .:--.'.  .'     ||  ||                  |           | | .''-. \`        _     _    _   
+ |   | \\ .'   / |   \\ |'--.  .-'|  |\\    .-------------'           | |/.'''. \\      .' |   | '  / |  
+ |   |/  .    \`" __ | |   |  |  |  | \\    '-.____...---.           |  /    | |     .   | /.' | .' |  
+ |    /\\  \\    .'.''| |   |  |  |__|  \`.             .'            | |     | |   .'.'| |///  | /  |  
+ |   |  \\  \\  / /   | |_  |  '.'        \`''-...... -'              | |     | | .'.'.-'  /|   \`'.  |  
+ '    \\  \\  \\ \\ \\._,\\ '/  |   /                                    | '.    | '..'   \\_.' '   .'|  '/ 
+'------'  '---'\`--'  \`"   \`'-'                                     '---'   '---'          \`-'  \`--'`;
+
+const NAME_STYLES = [
+  {
+    fontFamily: "Cormorant Garamond, Georgia, serif",
+    fontStyle: "italic",
+    fontWeight: 300,
+    color: "#c4778a",
+  },
+  {
+    fontFamily: "Georgia, serif",
+    fontStyle: "normal",
+    fontWeight: 400,
+    color: "#c4778a",
+    letterSpacing: "0.1em",
+  },
+  {
+    fontFamily: "'Courier New', Courier, monospace",
+    fontStyle: "normal",
+    fontWeight: 400,
+    color: "#c4778a",
+    whiteSpace: "pre",
+    lineHeight: 1.2,
+  },
+  {
+    fontFamily: "'Courier New', Courier, monospace",
+    fontStyle: "normal",
+    fontWeight: 400,
+    color: "#c4778a",
+    whiteSpace: "pre",
+    lineHeight: 1.25,
+  },
+];
+
+const NAME_TEXT = ["Katie Hsu", "徐家琳", ASCII_KATIE_HSU_CURSIVE, ASCII_KATIE_HSU_FANCY];
+
+function ScaledPre({ text, style }) {
+  const containerRef = useRef(null);
+  const preRef = useRef(null);
+  const [fontSize, setFontSize] = useState(16);
+
+  useEffect(() => {
+    const fit = () => {
+      const container = containerRef.current;
+      const pre = preRef.current;
+      if (!container || !pre) return;
+      const targetW = container.offsetWidth;
+      let lo = 4, hi = 200, best = 8;
+      for (let i = 0; i < 30; i++) {
+        const mid = (lo + hi) / 2;
+        pre.style.fontSize = mid + "px";
+        if (pre.scrollWidth <= targetW) { best = mid; lo = mid; }
+        else { hi = mid; }
+      }
+      setFontSize(Math.floor(best));
+    };
+    setTimeout(fit, 50);
+    const ro = new ResizeObserver(fit);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [text]);
+
+  return (
+    <div ref={containerRef} style={{ width: "100%", overflow: "hidden" }}>
+      <pre
+        ref={preRef}
+        style={{
+          ...style,
+          fontSize,
+          margin: 0,
+          padding: 0,
+          display: "block",
+          whiteSpace: "pre",
+        }}
+      >
+        {text}
+      </pre>
+    </div>
+  );
+}
+
+function CyclingName() {
+  const [styleIndex, setStyleIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  const cycle = useCallback(() => {
+    setAnimating(true);
+    setTimeout(() => {
+      setStyleIndex(i => (i + 1) % NAME_STYLES.length);
+      setAnimating(false);
+    }, 200);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(cycle, 3000);
+    return () => clearInterval(interval);
+  }, [cycle]);
+
+  const handleClick = () => { if (animating) return; cycle(); };
+  const currentStyle = NAME_STYLES[styleIndex];
+  const isAscii = currentStyle?.whiteSpace === "pre";
+  const asciiData = NAME_TEXT[styleIndex];
+
+  return (
+    <div
+      onClick={handleClick}
+      title="click to change style"
+      style={{
+        cursor: "pointer",
+        opacity: animating ? 0 : 1,
+        transform: animating ? "translateY(8px)" : "translateY(0)",
+        transition: "opacity 0.2s ease, transform 0.2s ease",
+        userSelect: "none",
+        width: "100%",
+      }}
+    >
+      {isAscii ? (
+        <div>
+          {typeof asciiData === 'object' && asciiData.katie ? (
+            <>
+              <ScaledPre text={asciiData.katie} style={currentStyle} />
+              <ScaledPre text={asciiData.hsu} style={currentStyle} />
+            </>
+          ) : (
+            <ScaledPre text={asciiData} style={currentStyle} />
+          )}
+        </div>
+      ) : (
+        <FitSingleLine
+          style={currentStyle}
+          splitAt={styleIndex === 0 ? ["Katie", "Hsu"] : styleIndex === 1 ? ["徐家", "琳"] : undefined}
+        >{NAME_TEXT[styleIndex]}</FitSingleLine>
+      )}
+    </div>
+  );
+}
+
+function FitSingleLine({ children, style, splitAt }) {
+  const containerRef = useRef(null);
+  const textRef = useRef(null);
+  const [fontSize, setFontSize] = useState(16);
+  const [split, setSplit] = useState(false);
+
+  useEffect(() => {
+    const fit = () => {
+      const container = containerRef.current;
+      const text = textRef.current;
+      if (!container || !text) return;
+      const targetW = container.offsetWidth;
+      text.style.whiteSpace = "nowrap";
+      let lo = 8, hi = 400, best = 16;
+      for (let i = 0; i < 30; i++) {
+        const mid = (lo + hi) / 2;
+        text.style.fontSize = mid + "px";
+        if (text.scrollWidth <= targetW) { best = mid; lo = mid; }
+        else { hi = mid; }
+      }
+      // If best font size is too small and we have a split point, go two lines
+      const shouldSplit = splitAt && best < 40;
+      setSplit(shouldSplit);
+      setFontSize(Math.floor(best));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [children, splitAt]);
+
+  if (split && splitAt) {
+    return (
+      <div ref={containerRef} style={{ width: "100%" }}>
+        <div ref={textRef} style={{ position: "absolute", visibility: "hidden", pointerEvents: "none", ...style, whiteSpace: "nowrap" }}>{children}</div>
+        <FitTextLines
+          lines={splitAt.map(word => [word])}
+          style={style}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} style={{ width: "100%" }}>
+      <div ref={textRef} style={{ ...style, fontSize, whiteSpace: "nowrap", display: "block" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 const FILTERS = [
   { id: "all", label: "All" },
   { id: "fullstack", label: "Full-Stack Web Development" },
@@ -1190,6 +1400,52 @@ const SKILL_CARDS = [
   { emoji: "🗄️", label: "Database Management", desc: "SQL (PostgreSQL) and NoSQL (MongoDB) with ETL methodologies, normalized schema design, and complex querying." },
 ];
 
+const RAINBOW_COLORS = ["#e8a0b0", "#f4a261", "#f9c74f", "#90be6d", "#4cc9f0", "#7b5ea7", "#e8a0b0"];
+
+function RainbowKatieButton({ onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const [colorIndex, setColorIndex] = useState(0);
+
+  useEffect(() => {
+    if (!hovered) {
+      setColorIndex(0);
+      return;
+    }
+    const id = setInterval(() => {
+      setColorIndex(i => (i + 1) % RAINBOW_COLORS.length);
+    }, 160);
+    return () => clearInterval(id);
+  }, [hovered]);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(20px)",
+        border: "1.5px solid #f0d8de",
+        borderRadius: "100px",
+        padding: "10px 20px",
+        boxShadow: "0 8px 32px rgba(180,120,140,0.12)",
+        cursor: "pointer",
+        fontFamily: "Cormorant Garamond, Georgia, serif",
+        fontSize: "1.2rem",
+        fontWeight: 600,
+        color: RAINBOW_COLORS[colorIndex],
+        letterSpacing: "0.01em",
+        whiteSpace: "nowrap",
+        flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        transition: hovered ? "color 0.12s ease" : "color 0.5s ease",
+      }}
+    >
+      katie hsu
+    </button>
+  );
+}
 function SkillCarousel() {
   const [active, setActive] = useState(0);
   const [prev, setPrev] = useState(null);
@@ -1207,7 +1463,7 @@ function SkillCarousel() {
     setDir(direction >= 0 ? 1 : -1);
     setAnimating(true);
     setActive(next);
-    setTimeout(() => { setPrev(null); setAnimating(false); }, 420);
+    setTimeout(() => { setPrev(null); setAnimating(false); }, 750);
   };
 
   useEffect(() => {
@@ -1228,17 +1484,17 @@ function SkillCarousel() {
         @keyframes slideInLeft  { from { opacity: 0; transform: translateX(-38px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
         @keyframes slideOutLeft  { from { opacity: 1; transform: translateX(0) scale(1); } to { opacity: 0; transform: translateX(-38px) scale(0.97); } }
         @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) scale(1); } to { opacity: 0; transform: translateX(38px) scale(0.97); } }
-        .skill-enter-fwd  { animation: slideInRight 0.42s cubic-bezier(.34,1.56,.64,1) both; }
-        .skill-enter-back { animation: slideInLeft  0.42s cubic-bezier(.34,1.56,.64,1) both; }
-        .skill-exit-fwd   { animation: slideOutLeft  0.42s cubic-bezier(.4,0,.2,1) both; }
-        .skill-exit-back  { animation: slideOutRight 0.42s cubic-bezier(.4,0,.2,1) both; }
+        .skill-enter-fwd  { animation: slideInRight 0.75s cubic-bezier(.34,1.56,.64,1) both; }
+        .skill-enter-back { animation: slideInLeft  0.75s cubic-bezier(.34,1.56,.64,1) both; }
+        .skill-exit-fwd   { animation: slideOutLeft  0.75s cubic-bezier(.4,0,.2,1) both; }
+        .skill-exit-back  { animation: slideOutRight 0.75s cubic-bezier(.4,0,.2,1) both; }
       `}</style>
 
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         {/* Left arrow */}
-        <button onClick={() => go(-1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 30, height: 30, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
-          onMouseEnter={e => { e.currentTarget.style.background = "#e8a0b0"; e.currentTarget.style.color = "#fff"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#c4778a"; }}>‹</button>
+        <button onClick={() => go(-1)} style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#c4778a", fontSize: "1.4rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", padding: "0 4px" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#e8a0b0"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "#c4778a"; }}>‹</button>
 
         {/* Card stage — two cards side by side */}
         <div style={{ flex: 1, position: "relative", height: 160, overflow: "hidden" }}>
@@ -1257,9 +1513,9 @@ function SkillCarousel() {
         </div>
 
         {/* Right arrow */}
-        <button onClick={() => go(1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 30, height: 30, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
-          onMouseEnter={e => { e.currentTarget.style.background = "#e8a0b0"; e.currentTarget.style.color = "#fff"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#c4778a"; }}>›</button>
+        <button onClick={() => go(1)} style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#c4778a", fontSize: "1.4rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", padding: "0 4px" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#e8a0b0"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "#c4778a"; }}>›</button>
       </div>
 
       {/* Dots */}
@@ -1311,7 +1567,7 @@ export default function Portfolio() {
     <>
       <SparkCursor />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Bebas+Neue&display=swap');
 
         @media (max-width: 900px) {
           .home-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
@@ -1398,7 +1654,7 @@ export default function Portfolio() {
 
         <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", zIndex: 100, display: "flex", alignItems: "stretch", gap: 12, width: "calc(100vw - 48px)", maxWidth: 1200 }}>
           {/* Logo pill - separate from nav */}
-          <button onClick={() => scrollTo("home")} style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid #f0d8de", borderRadius: "100px", padding: "10px 20px", boxShadow: "0 8px 32px rgba(180,120,140,0.12)", cursor: "pointer", fontFamily: "Cormorant Garamond, Georgia, serif", fontSize: "1.2rem", fontWeight: 600, color: "#c4778a", letterSpacing: "0.01em", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center" }}>katie hsu</button>
+          <RainbowKatieButton onClick={() => scrollTo("home")} />
           {/* Nav pill - fills remaining space, hearts right-aligned with fixed gap */}
           <nav style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid #f0d8de", borderRadius: "100px", padding: "10px 20px", boxShadow: "0 8px 32px rgba(180,120,140,0.12)", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px", flex: 1 }}>
             {NAV_LINKS.map((link) => (
@@ -1422,18 +1678,20 @@ export default function Portfolio() {
           <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "center" }}>
             <div>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }} className="fade-up">welcome to my portfolio</p>
-              <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
-                <span style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}>Hi, I'm</span><br />
-                <em style={{ color: "#c4778a", fontSize: "clamp(3.8rem, 9vw, 7rem)", fontFamily: "Cormorant Garamond, Georgia, serif" }}>Katie Hsu</em>
-              </h1>
-              <div className="fade-up d2" style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24, marginTop: 20 }}>
+              <div style={{ position: "relative", minHeight: "clamp(200px, 28vw, 340px)", marginBottom: 24 }}>
+                <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: 0, position: "absolute", top: 0, left: 0, right: 0 }}>
+                  <span style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}>Hi, I'm</span><br />
+                  <CyclingName />
+                </h1>
+              </div>
+              <div className="fade-up d2" style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24, marginTop: 0 }}>
                 {[
                   "Third Year Informatics Major, Data Science Minor @ UW Seattle",
                   "Client Side Web Development TA @ UW iSchool",
                   "Interested in Software Development (full stack web dev) and Data Science!",
                 ].map((line) => (
                   <div key={line} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ color: "#e8a0b0", fontSize: "0.65rem", marginTop: "0.3em", flexShrink: 0 }}>✦</span>
+                    <span style={{ color: "#e8a0b0", fontSize: "0.65rem", marginTop: "0.05em", flexShrink: 0 }}>✦</span>
                     <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.92rem", lineHeight: 1.5, color: "#6a4c58", fontWeight: 400, margin: 0 }}>{line}</p>
                   </div>
                 ))}
