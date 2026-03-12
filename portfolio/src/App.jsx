@@ -837,13 +837,16 @@ function CyclingName() {
 
   const handleClick = () => { if (animating) return; cycle(); };
   const currentStyle = NAME_STYLES[styleIndex];
+  const activeStyle = hovered ? { ...currentStyle, color: "inherit" } : currentStyle;
   const isAscii = currentStyle?.whiteSpace === "pre";
   const asciiData = NAME_TEXT[styleIndex];
 
   return (
     <div
       onClick={handleClick}
-      title="click to change style"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={hovered ? "name-rainbow" : ""}
       style={{
         cursor: "pointer",
         opacity: animating ? 0 : 1,
@@ -857,16 +860,16 @@ function CyclingName() {
         <div>
           {typeof asciiData === 'object' && asciiData.katie ? (
             <>
-              <ScaledPre text={asciiData.katie} style={currentStyle} />
-              <ScaledPre text={asciiData.hsu} style={currentStyle} />
+              <ScaledPre text={asciiData.katie} style={activeStyle} />
+              <ScaledPre text={asciiData.hsu} style={activeStyle} />
             </>
           ) : (
-            <ScaledPre text={asciiData} style={currentStyle} />
+            <ScaledPre text={asciiData} style={activeStyle} />
           )}
         </div>
       ) : (
         <FitSingleLine
-          style={currentStyle}
+          style={activeStyle}
           splitAt={styleIndex === 0 ? ["Katie", "Hsu"] : styleIndex === 1 ? ["徐家", "琳"] : undefined}
         >{NAME_TEXT[styleIndex]}</FitSingleLine>
       )}
@@ -1626,16 +1629,16 @@ export default function Portfolio() {
         .skill-tag { display: inline-block; background: #c4a898; border: 1.5px solid #c4a898; color: #fff; font-family: Inter, sans-serif; font-size: 0.8rem; padding: 5px 14px; border-radius: 100px; transition: all 0.2s; font-weight: 400; }
         .skill-tag:hover { background: #fff; color: #5a2d1a; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(107,68,50,0.15); }
         @keyframes rainbowShift {
-          0%   { color: #e8a0b0; }
-          14%  { color: #ff6b6b; }
-          28%  { color: #ffaa33; }
-          42%  { color: #ffe066; }
-          56%  { color: #77dd77; }
-          70%  { color: #66b3ff; }
-          84%  { color: #c084fc; }
-          100% { color: #e8a0b0; }
+          0%   { color: #ff6b6b; }
+          16%  { color: #ffaa33; }
+          32%  { color: #ffe066; }
+          48%  { color: #77dd77; }
+          64%  { color: #66b3ff; }
+          80%  { color: #c084fc; }
+          100% { color: #ff6b6b; }
         }
-        .name-rainbow { animation: rainbowShift 1.8s linear infinite; }
+        .name-rainbow { animation: rainbowShift 1.5s linear infinite; }
+        .name-rainbow span, .name-rainbow div, .name-rainbow pre { color: inherit !important; }
         .project-card { background: #fff; border: 1.5px solid #f0d8de; border-radius: 18px; padding: 28px 30px; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); position: relative; overflow: hidden; }
         .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f9a8ba, #8b5e4a); opacity: 0; transition: opacity 0.3s; }
         .project-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(180,120,140,0.12); border-color: #e8c0ca; }
