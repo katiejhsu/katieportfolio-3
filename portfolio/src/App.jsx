@@ -12,7 +12,7 @@ const PHOTO_URLS = [
   valleyImg,
 ];
 
-const NAV_LINKS = ["Skills", "Projects", "Socials", "Fun"];
+const NAV_LINKS = ["Skills", "Projects", "Socials"];
 
 const skills = {
   "Programming Languages": ["Java", "SQL", "Python", "R", "HTML", "CSS", "JavaScript", "Swift"],
@@ -382,6 +382,16 @@ function PolaroidGallery() {
     }, 400);
   };
 
+  const sendToPrev = () => {
+    if (sendingBack) return;
+    setSendingBack(true);
+    setTimeout(() => {
+      setCurrentIndex(i => (i - 1 + total) % total);
+      setDragX(0);
+      setSendingBack(false);
+    }, 400);
+  };
+
   const handleMouseDown = (e) => {
     if (sendingBack) return;
     startX.current = e.clientX;
@@ -396,7 +406,8 @@ function PolaroidGallery() {
   const handleMouseUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    if (Math.abs(dragX) > 60) sendToBack();
+    if (dragX < -60) sendToBack();
+    else if (dragX > 60) sendToPrev();
     else setDragX(0);
   };
 
@@ -414,7 +425,8 @@ function PolaroidGallery() {
   const handleTouchEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    if (Math.abs(dragX) > 60) sendToBack();
+    if (dragX < -60) sendToBack();
+    else if (dragX > 60) sendToPrev();
     else setDragX(0);
   };
 
@@ -573,6 +585,7 @@ function DraggableEnvButton({ onBack }) {
         filter: hovered ? "drop-shadow(0 0 25px rgba(255, 140, 170, 0.9))" : "drop-shadow(0 0 18px rgba(255, 140, 170, 0.7))",
         transform: hovered && !dragging ? "scale(1.1)" : "scale(1)",
         transition: dragging ? "none" : "transform 0.2s, filter 0.2s",
+        animation: dragging ? "none" : "floatAnim 3.5s ease-in-out infinite",
       }}
     >
       💌
@@ -596,6 +609,136 @@ function DraggableEnvButton({ onBack }) {
           pointerEvents: "none",
         }}>
           close envelope
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FunZoneModal({ onClose }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 500,
+        background: "rgba(252,232,237,0.72)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        animation: "fadeInUp 0.35s cubic-bezier(.16,1,.3,1) both",
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "#fff",
+          border: "1.5px solid #f0d8de",
+          borderRadius: 28,
+          padding: "52px 48px 48px",
+          maxWidth: 520,
+          width: "calc(100vw - 48px)",
+          boxShadow: "0 32px 80px rgba(180,120,140,0.18)",
+          position: "relative",
+          animation: "fadeInUp 0.4s cubic-bezier(.16,1,.3,1) both",
+        }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute", top: 20, right: 20,
+            background: "none", border: "none", cursor: "pointer",
+            fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
+            color: "#b08090", letterSpacing: "0.04em", textTransform: "uppercase",
+            padding: "6px 12px", borderRadius: 100,
+            transition: "background 0.2s",
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = "#fce8ed"}
+          onMouseLeave={e => e.currentTarget.style.background = "none"}
+        >
+          close ✕
+        </button>
+
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 10 }}>just for fun</p>
+        <h2 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif", marginBottom: 8 }}>
+          <em style={{ color: "#c4778a" }}>katie's korner ✨</em>
+        </h2>
+        <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "16px 0 32px", borderRadius: 2 }} />
+        <HeartClicker />
+      </div>
+    </div>
+  );
+}
+
+function FloatingShavedIceButton({ onClick }) {
+  const [pos, setPos] = useState({ x: window.innerWidth - 120, y: window.innerHeight - 240 });
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [hasDragged, setHasDragged] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+
+  const onMouseDown = (e) => {
+    e.preventDefault();
+    const rect = ref.current.getBoundingClientRect();
+    setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setDragging(true);
+    setHasDragged(false);
+  };
+
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e) => {
+      setHasDragged(true);
+      setPos({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+    };
+    const onUp = () => setDragging(false);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+  }, [dragging, offset]);
+
+  return (
+    <div
+      ref={ref}
+      onMouseDown={onMouseDown}
+      onClick={() => { if (!hasDragged) onClick(); }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "fixed", left: pos.x, top: pos.y, zIndex: 201,
+        cursor: dragging ? "grabbing" : "grab",
+        fontSize: "3.6rem", lineHeight: 1,
+        userSelect: "none",
+        filter: hovered
+          ? "drop-shadow(0 0 22px rgba(255,180,200,0.95))"
+          : "drop-shadow(0 0 14px rgba(255,180,200,0.6))",
+        transform: hovered && !dragging ? "scale(1.15)" : "scale(1)",
+        transition: dragging ? "none" : "transform 0.2s, filter 0.2s",
+        animation: dragging ? "none" : "floatAnim 3.5s ease-in-out infinite",
+      }}
+    >
+      🍧
+      {hovered && !dragging && (
+        <div style={{
+          position: "absolute",
+          bottom: "calc(100% + 8px)",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "rgba(255,255,255,0.95)",
+          border: "1.5px solid #f9c8d4",
+          borderRadius: 10,
+          padding: "6px 14px",
+          fontFamily: "Cormorant Garamond, Georgia, serif",
+          fontSize: "1rem",
+          fontStyle: "italic",
+          fontWeight: 500,
+          color: "#c4778a",
+          whiteSpace: "nowrap",
+          boxShadow: "0 4px 16px rgba(196,119,138,0.15)",
+          pointerEvents: "none",
+        }}>
+          fun zone ✨
         </div>
       )}
     </div>
@@ -786,9 +929,115 @@ function ScrollReveal({ children, delay = 0, direction = "up", threshold = 0.15,
   );
 }
 
+const SKILL_CARDS = [
+  { emoji: "🧹", label: "Dataset Cleaning & Analysis", desc: "R and Python (pandas) to engineer end-to-end pipelines transforming raw data into reproducible statistical models." },
+  { emoji: "📊", label: "Data Visualization & Dashboards", desc: "RShiny, Power BI, Plotly and Matplotlib to translate complex trends into data-driven recommendations." },
+  { emoji: "💻", label: "Full Stack Web Development", desc: "JavaScript, React, Node.js, and Swift with REST APIs, Azure Auth, and WebSockets for real-time interaction." },
+  { emoji: "📈", label: "Predictive Modeling & Statistics", desc: "Multiple linear regression and socioeconomic impact modeling with scikit-learn and statistical methods." },
+  { emoji: "🗄️", label: "Database Management", desc: "SQL (PostgreSQL) and NoSQL (MongoDB) with ETL methodologies, normalized schema design, and complex querying." },
+];
+
+function SkillCarousel() {
+  const [active, setActive] = useState(0);
+  const [prev, setPrev] = useState(null);
+  const [dir, setDir] = useState(1); // 1 = forward, -1 = back
+  const [animating, setAnimating] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef(null);
+  const total = SKILL_CARDS.length;
+
+  const advance = (direction, idx) => {
+    if (animating) return;
+    const next = idx !== undefined ? idx : (active + direction + total) % total;
+    if (next === active) return;
+    setPrev(active);
+    setDir(direction >= 0 ? 1 : -1);
+    setAnimating(true);
+    setActive(next);
+    setTimeout(() => { setPrev(null); setAnimating(false); }, 420);
+  };
+
+  useEffect(() => {
+    clearInterval(intervalRef.current);
+    if (!paused) {
+      intervalRef.current = setInterval(() => advance(1), 2400);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [paused, active, animating]);
+
+  const go = (direction) => { setPaused(true); advance(direction); };
+  const pick = (i) => { if (i === active) return; setPaused(true); advance(i > active ? 1 : -1, i); };
+
+  return (
+    <div style={{ position: "relative", width: "100%" }}>
+      <style>{`
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(38px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes slideInLeft  { from { opacity: 0; transform: translateX(-38px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes slideOutLeft  { from { opacity: 1; transform: translateX(0) scale(1); } to { opacity: 0; transform: translateX(-38px) scale(0.97); } }
+        @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) scale(1); } to { opacity: 0; transform: translateX(38px) scale(0.97); } }
+        .skill-enter-fwd  { animation: slideInRight 0.42s cubic-bezier(.34,1.56,.64,1) both; }
+        .skill-enter-back { animation: slideInLeft  0.42s cubic-bezier(.34,1.56,.64,1) both; }
+        .skill-exit-fwd   { animation: slideOutLeft  0.42s cubic-bezier(.4,0,.2,1) both; }
+        .skill-exit-back  { animation: slideOutRight 0.42s cubic-bezier(.4,0,.2,1) both; }
+      `}</style>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {/* Left arrow */}
+        <button onClick={() => go(-1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 34, height: 34, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#e8a0b0"; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#c4778a"; }}>‹</button>
+
+        {/* Card stage */}
+        <div style={{ flex: 1, position: "relative", height: 160, overflow: "hidden" }}>
+          {/* Exiting card */}
+          {prev !== null && (
+            <div key={`exit-${prev}`} className={dir === 1 ? "skill-exit-fwd" : "skill-exit-back"} style={{ position: "absolute", inset: 0 }}>
+              <SkillCard card={SKILL_CARDS[prev]} />
+            </div>
+          )}
+          {/* Entering card */}
+          <div key={`enter-${active}`} className={animating ? (dir === 1 ? "skill-enter-fwd" : "skill-enter-back") : ""} style={{ position: "absolute", inset: 0 }}>
+            <SkillCard card={SKILL_CARDS[active]} />
+          </div>
+        </div>
+
+        {/* Right arrow */}
+        <button onClick={() => go(1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 34, height: 34, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#e8a0b0"; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#c4778a"; }}>›</button>
+      </div>
+
+      {/* Dots */}
+      <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 12 }}>
+        {SKILL_CARDS.map((_, i) => (
+          <div key={i} onClick={() => pick(i)} style={{ width: i === active ? 18 : 7, height: 7, borderRadius: 100, background: i === active ? "#c4778a" : "#f9c8d4", transition: "all 0.3s", cursor: "pointer" }} />
+        ))}
+      </div>
+
+      {paused && (
+        <button onClick={() => setPaused(false)} style={{ display: "block", margin: "8px auto 0", background: "none", border: "none", fontFamily: "Inter, sans-serif", fontSize: "0.68rem", color: "#b08090", cursor: "pointer", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+          resume ▶
+        </button>
+      )}
+    </div>
+  );
+}
+
+function SkillCard({ card }) {
+  return (
+    <div style={{ width: "100%", height: "100%", background: "#fff", border: "1.5px solid #e8a0b0", borderRadius: 18, padding: "20px 24px", boxShadow: "0 8px 28px rgba(180,120,140,0.13)", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
+      <div style={{ fontSize: "1.8rem", marginBottom: 10 }}>{card.emoji}</div>
+      <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.82rem", color: "#5d9970", marginBottom: 8, letterSpacing: "0.01em" }}>{card.label}</div>
+      <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", lineHeight: 1.65, color: "#7a5060", margin: 0 }}>{card.desc}</p>
+    </div>
+  );
+}
+
+
 export default function Portfolio() {
   const [opened, setOpened] = useState(false);
   const [envelopeClosing, setEnvelopeClosing] = useState(false);
+  const [funZoneOpen, setFunZoneOpen] = useState(false);
   const activeSection = useScrollSpy(NAV_LINKS.map((n) => n.toLowerCase()));
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -883,6 +1132,8 @@ export default function Portfolio() {
       {(!opened || envelopeClosing) && <EnvelopeScreen onOpen={() => { window.scrollTo({ top: 0 }); setOpened(true); }} isClosing={envelopeClosing} />}
 
       {opened && <DraggableEnvButton onBack={handleBack} />}
+      {opened && <FloatingShavedIceButton onClick={() => setFunZoneOpen(true)} />}
+      {funZoneOpen && <FunZoneModal onClose={() => setFunZoneOpen(false)} />}
 
       <div className="grid-bg" style={{ fontFamily: "Inter, sans-serif", minHeight: "100vh", color: "#3a2a2e", opacity: opened ? 1 : 0, transition: "opacity 0.6s ease 0.2s" }}>
 
@@ -911,19 +1162,29 @@ export default function Portfolio() {
           <span className="sp4" style={{ position: "absolute", bottom: "12%", right: "3%", fontSize: "clamp(0.6rem, 1.5vw, 1rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp1" style={{ position: "absolute", bottom: "28%", left: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp2" style={{ position: "absolute", bottom: "26%", right: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#e8a0b0", pointerEvents: "none" }}>✦</span>
-          <div className="home-grid" style={{ maxWidth: 1000, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
+          <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "center" }}>
             <div>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }} className="fade-up">welcome to my portfolio</p>
               <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
                 <span style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}>Hi, I'm</span><br />
                 <em style={{ color: "#c4778a", fontSize: "clamp(3.8rem, 9vw, 7rem)", fontFamily: "Cormorant Garamond, Georgia, serif" }}>Katie Hsu</em>
               </h1>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", lineHeight: 1.8, color: "#6a4c58", fontWeight: 400, marginBottom: 24 }} className="fade-up d2">
-                she/her<br />Informatics Major at UW Seattle<br />Teaching Assistant for Client Side Web Development
-              </p>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", lineHeight: 1.8, color: "#7a5060", fontWeight: 400, marginBottom: 36 }} className="fade-up d3">
-                I'm a BS Informatics student with a minor in Data Science at the University of Washington, graduating June 2027. I love building thoughtful web experiences and diving deep into data to uncover meaningful insights.
-              </p>
+              <div className="fade-up d2" style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24, marginTop: 20 }}>
+                {[
+                  "Third Year Informatics Major, Data Science Minor @ UW Seattle",
+                  "Client Side Web Development TA @ UW iSchool",
+                  "Interested in Software Development (full stack web dev) and Data Science!",
+                ].map((line) => (
+                  <div key={line} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ color: "#e8a0b0", fontSize: "0.65rem", marginTop: "0.3em", flexShrink: 0 }}>✦</span>
+                    <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.92rem", lineHeight: 1.5, color: "#6a4c58", fontWeight: 400, margin: 0 }}>{line}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="fade-up d3" style={{ marginBottom: 36 }}>
+                <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.68rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 14 }}>here's a brief overview of what I have experience with</p>
+                <SkillCarousel />
+              </div>
               <div className="home-buttons fade-up d4" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <button onClick={() => scrollTo("projects")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "#e8a0b0", color: "#fff", border: "none", borderRadius: "100px", cursor: "pointer", boxShadow: "0 6px 20px rgba(196,119,138,0.22)", transition: "transform 0.2s" }} onMouseEnter={e => e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform="translateY(0)"}>View Projects</button>
                 <button onClick={() => scrollTo("socials")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "transparent", color: "#5d9970", border: "1.5px solid #a8d5b0", borderRadius: "100px", cursor: "pointer", transition: "all 0.25s" }} onMouseEnter={e => { e.currentTarget.style.background="#e8a0b0"; e.currentTarget.style.color="#fff"; }} onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#5d9970"; }}>Get In Touch</button>
@@ -1013,25 +1274,15 @@ export default function Portfolio() {
                 <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#b08090", marginBottom: 16 }}>open to opportunities</p>
                 <h3 style={{ fontSize: "clamp(1.5rem, 4vw, 2.2rem)", fontWeight: 300, color: "#3a2a2e", marginBottom: 12 }}>Want to work together?</h3>
                 <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.95rem", color: "#6a4c58", fontWeight: 300, margin: "0 auto 28px", maxWidth: 460, lineHeight: 1.75 }}>I'm always open to interesting projects, internships, and collaborations. Let's chat!</p>
-                <a href="https://www.linkedin.com/in/katiejhsu/" target="_blank" rel="noreferrer" style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 32px", background: "#e8a0b0", color: "#fff", borderRadius: "100px", textDecoration: "none", display: "inline-block", boxShadow: "0 6px 20px rgba(109,191,130,0.22)" }}>Say Hello on LinkedIn →</a>
+                <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+                  <a href="https://www.linkedin.com/in/katiejhsu/" target="_blank" rel="noreferrer" style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 32px", background: "#e8a0b0", color: "#fff", borderRadius: "100px", textDecoration: "none", display: "inline-block", boxShadow: "0 6px 20px rgba(196,119,138,0.22)" }}>Say Hello on LinkedIn →</a>
+                  <a href="mailto:katiejhsu@gmail.com" style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 32px", background: "transparent", color: "#c4778a", border: "1.5px solid #e8a0b0", borderRadius: "100px", textDecoration: "none", display: "inline-block", transition: "all 0.25s" }} onMouseEnter={e => { e.currentTarget.style.background="#e8a0b0"; e.currentTarget.style.color="#fff"; }} onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#c4778a"; }}>Send Me an Email ✉️</a>
+                </div>
               </div>
             </ScrollReveal>
           </div>
         </section>
 
-        {/* FUN */}
-        <section id="fun" style={{ padding: "100px 5vw", minHeight: "60vh", borderTop: "1px solid #f0d8de" }}>
-          <div style={{ maxWidth: 700, margin: "0 auto", width: "100%" }}>
-            <ScrollReveal delay={0}>
-              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }}>just for fun</p>
-              <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif" }}>The Fun<br /><em style={{ color: "#c4778a" }}>Zone ✨</em></h2>
-              <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "20px 0 40px", borderRadius: 2 }} />
-            </ScrollReveal>
-            <ScrollReveal delay={150} direction="up" threshold={0.1}>
-              <HeartClicker />
-            </ScrollReveal>
-          </div>
-        </section>
 
         <footer style={{ padding: "32px", textAlign: "center", borderTop: "1px solid #f0d8de" }}>
           <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#b08090", fontWeight: 300 }}>designed &amp; built with &lt;3 by katie hsu · 2026</p>
