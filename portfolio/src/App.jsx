@@ -1411,13 +1411,8 @@ function RainbowKatieButton({ onClick }) {
   const [colorIndex, setColorIndex] = useState(0);
 
   useEffect(() => {
-    if (!hovered) {
-      setColorIndex(0);
-      return;
-    }
-    const id = setInterval(() => {
-      setColorIndex(i => (i + 1) % RAINBOW_COLORS.length);
-    }, 160);
+    if (!hovered) { setColorIndex(0); return; }
+    const id = setInterval(() => setColorIndex(i => (i + 1) % RAINBOW_COLORS.length), 160);
     return () => clearInterval(id);
   }, [hovered]);
 
@@ -1426,27 +1421,14 @@ function RainbowKatieButton({ onClick }) {
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        background: "rgba(255,255,255,0.92)",
-        backdropFilter: "blur(20px)",
-        border: "1.5px solid #f0d8de",
-        borderRadius: "100px",
-        padding: "10px 20px",
-        boxShadow: "0 8px 32px rgba(180,120,140,0.12)",
-        cursor: "pointer",
-        fontFamily: "Cormorant Garamond, Georgia, serif",
-        fontSize: "1.2rem",
-        fontWeight: 600,
-        color: RAINBOW_COLORS[colorIndex],
-        letterSpacing: "0.01em",
-        whiteSpace: "nowrap",
-        flexShrink: 0,
-        display: "flex",
-        alignItems: "center",
-        transition: hovered ? "color 0.12s ease" : "color 0.5s ease",
-      }}
+      style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "none", border: "none", padding: 0, width: 110, height: 60, transition: "transform 0.2s", flexShrink: 0 }}
     >
-      katie hsu
+      <svg viewBox="0 0 110 60" xmlns="http://www.w3.org/2000/svg" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+        <path d="M55 54 C54 53 4 37 4 18 C4 8 15 2 28 2 C37 2 47 8 55 18 C63 8 73 2 82 2 C95 2 106 8 106 18 C106 37 56 53 55 54Z" fill="#e8a0b0"/>
+      </svg>
+      <span style={{ position: "relative", zIndex: 1, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "0.95rem", fontWeight: 600, letterSpacing: "0.05em", textTransform: "lowercase", color: hovered ? RAINBOW_COLORS[colorIndex] : "#fff", lineHeight: 1, textAlign: "center", paddingBottom: 5, transition: hovered ? "color 0.12s ease" : "color 0.5s ease" }}>
+        katie hsu
+      </span>
     </button>
   );
 }
@@ -1667,11 +1649,9 @@ export default function Portfolio() {
 
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 99, height: 150, backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", background: "linear-gradient(to bottom, rgba(252,232,237,0.55) 0%, rgba(252,232,237,0) 100%)", maskImage: "linear-gradient(to bottom, black 80%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 80%, transparent 100%)", pointerEvents: "none" }} />
 
-        <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", zIndex: 100, display: "flex", alignItems: "stretch", gap: 12, width: "calc(100vw - 48px)", maxWidth: 1200 }}>
-          {/* Logo pill - separate from nav */}
+        <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", zIndex: 100, display: "flex", alignItems: "center", gap: 8, width: "calc(100vw - 48px)", maxWidth: 1200, justifyContent: "space-between" }}>
           <RainbowKatieButton onClick={() => scrollTo("home")} />
-          {/* Nav pill - fills remaining space, hearts right-aligned with fixed gap */}
-          <nav style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid #f0d8de", borderRadius: "100px", padding: "10px 20px", boxShadow: "0 8px 32px rgba(180,120,140,0.12)", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px", flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {NAV_LINKS.map((link) => (
               <button key={link} className={"nav-heart" + (activeSection === link.toLowerCase() ? " active" : "")} onClick={() => scrollTo(link.toLowerCase())}>
                 <svg viewBox="0 0 68 60" xmlns="http://www.w3.org/2000/svg">
@@ -1680,12 +1660,10 @@ export default function Portfolio() {
                 <span>{link}</span>
               </button>
             ))}
-          </nav>
+          </div>
         </div>
 
-        {/* HOME */}
         <section id="home" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "170px 5vw 80px", position: "relative", overflow: "hidden" }}>
-          {/* Sparkles - fixed to bottom corners only, well below nav and text */}
           <span className="sp3" style={{ position: "absolute", bottom: "14%", left: "3%", fontSize: "clamp(0.6rem, 1.5vw, 1rem)", color: "#e8a0b0", pointerEvents: "none" }}>✦</span>
           <span className="sp4" style={{ position: "absolute", bottom: "12%", right: "3%", fontSize: "clamp(0.6rem, 1.5vw, 1rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp1" style={{ position: "absolute", bottom: "28%", left: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
@@ -1720,16 +1698,13 @@ export default function Portfolio() {
                 <button onClick={() => scrollTo("socials")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "transparent", color: "#6b3a2a", border: "1.5px solid #8b5e4a", borderRadius: "100px", cursor: "pointer", transition: "all 0.25s" }} onMouseEnter={e => { e.currentTarget.style.background="#e8a0b0"; e.currentTarget.style.color="#fff"; }} onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#6b3a2a"; }}>Get In Touch</button>
               </div>
             </div>
-
-            <div className="home-photo-container fade-up d2" style={{ position: "relative", width: "100%", minHeight: 420, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div className="home-photo-container fade-up d2" style={{ display: "flex", justifyContent: "center", alignItems: "center", alignSelf: "center" }}>
               <div style={{ position: "relative", width: 320, height: 480, display: "flex", justifyContent: "center" }}>
                 <PolaroidGallery />
               </div>
             </div>
           </div>
         </section>
-
-        {/* SKILLS */}
         <section id="skills" style={{ padding: "100px 5vw", backgroundColor: "#ffddea", backgroundImage: "radial-gradient(circle, #ffb6d1 3.5px, transparent 3.5px)", backgroundSize: "52px 52px", borderTop: "1px solid #f0d8de" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <ScrollReveal delay={0}>
