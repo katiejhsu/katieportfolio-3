@@ -820,6 +820,7 @@ function ScaledPre({ text, style }) {
 function CyclingName() {
   const [styleIndex, setStyleIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const cycle = useCallback(() => {
     setAnimating(true);
@@ -977,7 +978,7 @@ function ProjectsWithFilter() {
               <h3 style={{ fontSize: "1.25rem", fontWeight: 500, color: "#3a2a2e", marginBottom: 12, minHeight: "3em", display: "flex", alignItems: "flex-start" }}>{p.title}</h3>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.88rem", lineHeight: 1.75, color: "#6a4c58", fontWeight: 400, marginBottom: 18, flex: 1 }}>{p.desc}</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 20 }}>
-                {p.tags.map((t) => <span key={t} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", background: "rgba(168,213,176,0.2)", color: "#3a6047", padding: "3px 12px", borderRadius: "100px" }}>{t}</span>)}
+                {p.tags.map((t) => <span key={t} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", background: "rgba(139,94,74,0.12)", color: "#5a2d1a", padding: "3px 12px", borderRadius: "100px" }}>{t}</span>)}
               </div>
               <div style={{ display: "flex", gap: 18 }}>
                 {p.links.map((l) => <a key={l.label} href={l.href} className="proj-link" target="_blank" rel="noreferrer">{l.label} →</a>)}
@@ -1538,7 +1539,7 @@ function SkillCard({ card }) {
   return (
     <div style={{ width: "100%", height: "100%", background: "#fff", border: "1.5px solid #e8a0b0", borderRadius: 18, padding: "16px 18px", boxShadow: "0 8px 28px rgba(180,120,140,0.13)", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
       <div style={{ fontSize: "1.6rem", marginBottom: 8 }}>{card.emoji}</div>
-      <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.78rem", color: "#5d9970", marginBottom: 6, letterSpacing: "0.01em" }}>{card.label}</div>
+      <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.78rem", color: "#6b3a2a", marginBottom: 6, letterSpacing: "0.01em" }}>{card.label}</div>
       <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.76rem", lineHeight: 1.6, color: "#7a5060", margin: 0 }}>{card.desc}</p>
     </div>
   );
@@ -1622,14 +1623,25 @@ export default function Portfolio() {
         .nav-heart svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         .nav-heart span { position: relative; z-index: 1; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: lowercase; color: #fff; line-height: 1; text-align: center; padding-bottom: 5px; }
         .nav-heart.active svg path { fill: #c4556e !important; }
-        .skill-tag { display: inline-block; background: #fff; border: 1.5px solid #c8e8cf; color: #3a6047; font-family: Inter, sans-serif; font-size: 0.8rem; padding: 5px 14px; border-radius: 100px; transition: all 0.2s; font-weight: 400; }
-        .skill-tag:hover { background: #c8e8cf; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(107,191,130,0.18); }
+        .skill-tag { display: inline-block; background: #c4a898; border: 1.5px solid #c4a898; color: #fff; font-family: Inter, sans-serif; font-size: 0.8rem; padding: 5px 14px; border-radius: 100px; transition: all 0.2s; font-weight: 400; }
+        .skill-tag:hover { background: #fff; color: #5a2d1a; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(107,68,50,0.15); }
+        @keyframes rainbowShift {
+          0%   { color: #e8a0b0; }
+          14%  { color: #ff6b6b; }
+          28%  { color: #ffaa33; }
+          42%  { color: #ffe066; }
+          56%  { color: #77dd77; }
+          70%  { color: #66b3ff; }
+          84%  { color: #c084fc; }
+          100% { color: #e8a0b0; }
+        }
+        .name-rainbow { animation: rainbowShift 1.8s linear infinite; }
         .project-card { background: #fff; border: 1.5px solid #f0d8de; border-radius: 18px; padding: 28px 30px; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); position: relative; overflow: hidden; }
-        .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f9a8ba, #a8d5b0); opacity: 0; transition: opacity 0.3s; }
+        .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f9a8ba, #8b5e4a); opacity: 0; transition: opacity 0.3s; }
         .project-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(180,120,140,0.12); border-color: #e8c0ca; }
         .project-card:hover::before { opacity: 1; }
-        .proj-link { display: inline-flex; align-items: center; gap: 5px; font-family: Inter, sans-serif; font-size: 0.78rem; font-weight: 500; text-decoration: none; color: #5d9970; border-bottom: 1.5px solid #a8d5b0; padding-bottom: 1px; transition: all 0.2s; }
-        .proj-link:hover { color: #3a6047; }
+        .proj-link { display: inline-flex; align-items: center; gap: 5px; font-family: Inter, sans-serif; font-size: 0.78rem; font-weight: 500; text-decoration: none; color: #6b3a2a; border-bottom: 1.5px solid #8b5e4a; padding-bottom: 1px; transition: all 0.2s; }
+        .proj-link:hover { color: #5a2d1a; }
         .social-card { border-radius: 20px; padding: 32px 28px; border: 1.5px solid #f0d8de; text-decoration: none; display: block; background: #fff; transition: all 0.3s cubic-bezier(.34,1.56,.64,1); box-sizing: border-box; }
         .social-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 24px 50px rgba(180,120,140,0.15); }
         .heart-clip {
@@ -1702,7 +1714,7 @@ export default function Portfolio() {
               </div>
               <div className="home-buttons fade-up d4" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <button onClick={() => scrollTo("projects")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "#e8a0b0", color: "#fff", border: "none", borderRadius: "100px", cursor: "pointer", boxShadow: "0 6px 20px rgba(196,119,138,0.22)", transition: "transform 0.2s" }} onMouseEnter={e => e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform="translateY(0)"}>View Projects</button>
-                <button onClick={() => scrollTo("socials")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "transparent", color: "#5d9970", border: "1.5px solid #a8d5b0", borderRadius: "100px", cursor: "pointer", transition: "all 0.25s" }} onMouseEnter={e => { e.currentTarget.style.background="#e8a0b0"; e.currentTarget.style.color="#fff"; }} onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#5d9970"; }}>Get In Touch</button>
+                <button onClick={() => scrollTo("socials")} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", padding: "13px 28px", background: "transparent", color: "#6b3a2a", border: "1.5px solid #8b5e4a", borderRadius: "100px", cursor: "pointer", transition: "all 0.25s" }} onMouseEnter={e => { e.currentTarget.style.background="#e8a0b0"; e.currentTarget.style.color="#fff"; }} onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#6b3a2a"; }}>Get In Touch</button>
               </div>
             </div>
 
@@ -1725,7 +1737,7 @@ export default function Portfolio() {
             <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
               {Object.entries(skills).map(([cat, items], i) => (
                 <ScrollReveal key={cat} delay={i * 100} direction="up">
-                  <h3 style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", color: "#5d9970", marginBottom: 18 }}>{cat}</h3>
+                  <h3 style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", color: "#6b3a2a", marginBottom: 18 }}>{cat}</h3>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                     {items.map((s) => <span key={s} className="skill-tag">{s}</span>)}
                   </div>
@@ -1760,7 +1772,7 @@ export default function Portfolio() {
                   <a href={s.href} className="social-card" target="_blank" rel="noreferrer" style={{ height: "100%" }}>
                     <div style={{ fontSize: "2.2rem", marginBottom: 14 }}>{s.emoji}</div>
                     <h3 style={{ fontSize: "1.2rem", fontWeight: 500, marginBottom: 4, color: "#3a2a2e" }}>{s.name}</h3>
-                    <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#5d9970", fontWeight: 500, marginBottom: 6 }}>{s.handle}</p>
+                    <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#6b3a2a", fontWeight: 500, marginBottom: 6 }}>{s.handle}</p>
                     <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#8a6070", fontWeight: 400 }}>{s.desc}</p>
                   </a>
                 </ScrollReveal>
