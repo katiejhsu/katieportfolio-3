@@ -675,7 +675,7 @@ function FitTextLines({ lines, style }) {
       const widthBasedSizes = lines.map((line) => {
         ruler.style.fontSize = "100px";
         ruler.style.whiteSpace = "nowrap";
-      const plainText = line.map(seg => {
+        const plainText = line.map(seg => {
           if (typeof seg === "string") return seg;
           return seg.props?.word ?? seg.props?.children ?? "";
         }).join("");
@@ -920,7 +920,6 @@ function FitSingleLine({ children, style, splitAt }) {
       const text = textRef.current;
       if (!container || !text) return;
       const targetW = container.offsetWidth;
-      // Skip if width hasn't changed (name cycled but container didn't resize)
       if (!forceRun && targetW === lastWidth.current) return;
       lastWidth.current = targetW;
       text.style.whiteSpace = "nowrap";
@@ -935,7 +934,7 @@ function FitSingleLine({ children, style, splitAt }) {
       setSplit(shouldSplit);
       setFontSize(Math.floor(best));
     };
-    fit(true); // always run on mount / children change
+    fit(true);
     const ro = new ResizeObserver(() => fit(false));
     if (containerRef.current) ro.observe(containerRef.current);
     return () => ro.disconnect();
@@ -1029,6 +1028,8 @@ function ProjectsWithFilter() {
 
 function FunZoneModal({ onClose }) {
   const [hoveredKeyword, setHoveredKeyword] = useState(null);
+  const [panelWidth, setPanelWidth] = useState(null);
+  const rulerRef = useRef(null);
 
   const keywordImages = {
     paddleboarding: paddleImg,
@@ -1039,10 +1040,48 @@ function FunZoneModal({ onClose }) {
 
   const activeImg = hoveredKeyword ? keywordImages[hoveredKeyword] : null;
 
+  const plainLines = [
+    "when i'm not",
+    "creating websites",
+    "or playing with",
+    "data, i'm either",
+    "out paddleboarding",
+    "or swimming",
+    "or hiking",
+    "or doing yoga",
+    "or trail running",
+  ];
+
+  const computePanelWidth = useCallback(() => {
+    const ruler = rulerRef.current;
+    if (!ruler) return;
+    const vh = window.innerHeight;
+    const LINE_HEIGHT = 1.1;
+    const REF = 100;
+    ruler.style.fontFamily = "Cormorant Garamond, Georgia, serif";
+    ruler.style.fontStyle = "italic";
+    ruler.style.whiteSpace = "nowrap";
+    ruler.style.fontSize = REF + "px";
+    const naturalWidths = plainLines.map(text => {
+      ruler.textContent = text;
+      return ruler.scrollWidth;
+    });
+    // All lines fill height: W = vh / (LINE_HEIGHT * REF * sum(1/nw_i))
+    const sumInv = naturalWidths.reduce((acc, nw) => acc + 1 / nw, 0);
+    const W = vh / (LINE_HEIGHT * REF * sumInv);
+    setPanelWidth(Math.ceil(W) + 48);
+  }, []);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
+    const t = setTimeout(computePanelWidth, 50);
+    window.addEventListener("resize", computePanelWidth);
+    return () => {
+      document.body.style.overflow = "";
+      clearTimeout(t);
+      window.removeEventListener("resize", computePanelWidth);
+    };
+  }, [computePanelWidth]);
 
   const Keyword = ({ word, id }) => (
     <span
@@ -1069,6 +1108,7 @@ function FunZoneModal({ onClose }) {
         animation: "fadeInUp 0.35s cubic-bezier(.16,1,.3,1) both",
       }}
     >
+      <div ref={rulerRef} style={{ position: "fixed", top: -9999, left: 0, visibility: "hidden", pointerEvents: "none" }} />
       <div
         onClick={e => e.stopPropagation()}
         style={{
@@ -1080,12 +1120,13 @@ function FunZoneModal({ onClose }) {
           display: "flex",
         }}
       >
-        {/* LEFT HALF — dark pink bg, light pink text, fills exactly 50vw × 100vh */}
+        {/* LEFT HALF — dark pink bg, width hugs text */}
         <div style={{
-          width: "50vw",
+          width: panelWidth ? panelWidth + "px" : "50vw",
           height: "100vh",
           background: "#c4556e",
-          padding: 0,
+          padding: "0 24px",
+          boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -1094,6 +1135,7 @@ function FunZoneModal({ onClose }) {
           position: "sticky",
           top: 0,
           alignSelf: "flex-start",
+          transition: "width 0.25s ease",
         }}>
           <FitTextLines
             style={{
