@@ -17,7 +17,7 @@ const PHOTO_URLS = [
   valleyImg,
 ];
 
-const NAV_LINKS = ["Skills", "Projects", "Socials"];
+const NAV_LINKS = ["Skills", "Projects", "Experience", "Socials"];
 
 const skills = {
   "Programming Languages": ["Java", "SQL", "Python", "R", "HTML", "CSS", "JavaScript", "Swift"],
@@ -746,20 +746,22 @@ const NAME_STYLES = [
     letterSpacing: "0.1em",
   },
   {
-    fontFamily: "'Courier New', Courier, monospace",
+    fontFamily: "'Lucida Console', 'Consolas', 'Courier New', monospace",
     fontStyle: "normal",
-    fontWeight: 400,
+    fontWeight: 900,
     color: "#c4778a",
     whiteSpace: "pre",
     lineHeight: 1.2,
+    textShadow: "0.4px 0 0 #c4778a, -0.4px 0 0 #c4778a, 0 0.4px 0 #c4778a, 0 -0.4px 0 #c4778a",
   },
   {
-    fontFamily: "'Courier New', Courier, monospace",
+    fontFamily: "'Lucida Console', 'Consolas', 'Courier New', monospace",
     fontStyle: "normal",
-    fontWeight: 400,
+    fontWeight: 900,
     color: "#c4778a",
     whiteSpace: "pre",
     lineHeight: 1.25,
+    textShadow: "0.4px 0 0 #c4778a, -0.4px 0 0 #c4778a, 0 0.4px 0 #c4778a, 0 -0.4px 0 #c4778a",
   },
 ];
 
@@ -1080,7 +1082,7 @@ function FunZoneModal({ onClose }) {
     ["out ", <Keyword key="pb" word="paddleboarding" id="paddleboarding" />],
     ["or ", <Keyword key="sw" word="swimming" id="swimming" />],
     ["or ", <Keyword key="hk" word="hiking" id="hiking" />],
-    ["or doing ", <Keyword key="yg" word="yoga" id="yoga" />],
+    ["or practicing ", <Keyword key="yg" word="yoga" id="yoga" />],
     ["or ", <Keyword key="tr" word="trail running" id="trail running" />],
   ];
   const textStyle = { fontFamily: "Cormorant Garamond, Georgia, serif", fontWeight: 400, fontStyle: "italic", letterSpacing: "0.01em", color: "#fce8ed" };
@@ -1675,6 +1677,7 @@ export default function Portfolio() {
                 {[
                   "Third Year Informatics Major, Data Science Minor @ UW Seattle",
                   "Client Side Web Development TA @ UW iSchool",
+                  "Swim Instructor, Lifeguard & Camp Leader @ Pro Sports Club",
                   "Interested in Software Development (full stack web dev) and Data Science!",
                 ].map((line) => (
                   <div key={line} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -1730,6 +1733,71 @@ export default function Portfolio() {
             </ScrollReveal>
           </div>
         </section>
+        {/* EXPERIENCE */}
+        <section id="experience" style={{ padding: "100px 5vw", borderTop: "1px solid #f0d8de" }}>
+          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+            <ScrollReveal delay={0}>
+              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }}>where i've worked</p>
+              <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif" }}>Work<br /><em style={{ color: "#e8a0b0" }}>Experience</em></h2>
+              <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "20px 0 48px", borderRadius: 2 }} />
+            </ScrollReveal>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+              {[
+                {
+                  emoji: "📚",
+                  role: "Teaching Assistant — INFO 340",
+                  subtitle: "Client Side Web Development",
+                  org: "University of Washington",
+                  location: "Seattle, WA",
+                  date: "Dec 2025 – Present",
+                  bullets: [
+                    "Facilitate weekly labs for 35+ students, translating web development concepts into accessible lessons and providing real-time debugging for HTML, CSS, and JavaScript projects.",
+                    "Assess front-end applications to provide actionable technical feedback and verify code quality.",
+                    "Instruct students on version control using Git, guiding them through collaborative workflows and repository management to ensure best practices in software development.",
+                  ],
+                  tags: ["HTML", "CSS", "JavaScript", "Git", "Teaching"],
+                },
+                {
+                  emoji: "🏊",
+                  role: "Swim Instructor · Camp Leader · Lifeguard",
+                  subtitle: "Aquatics & Youth Programs",
+                  org: "Pro Sports Club",
+                  location: "Bellevue, WA",
+                  date: "May 2022 – Present",
+                  bullets: [
+                    "Ensure safety at pools with over 30 patrons, utilizing problem-solving and risk assessment skills.",
+                  ],
+                  tags: ["Lifeguarding", "Swim Instruction", "Leadership", "Safety"],
+                },
+              ].map((exp, i) => (
+                <ScrollReveal key={exp.role} delay={i * 100} direction="up">
+                  <div className="project-card" style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 4 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: "1.8rem" }}>{exp.emoji}</span>
+                        <div>
+                          <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#b08090", fontWeight: 500, marginBottom: 3 }}>{exp.subtitle}</div>
+                          <h3 style={{ fontSize: "1.15rem", fontWeight: 500, color: "#3a2a2e", margin: 0 }}>{exp.role}</h3>
+                        </div>
+                      </div>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.78rem", color: "#b08090", fontWeight: 400, whiteSpace: "nowrap", paddingTop: 2 }}>{exp.date}</span>
+                    </div>
+                    <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#8a6070", fontWeight: 400, margin: "4px 0 16px", paddingLeft: 52 }}>{exp.org} · {exp.location}</p>
+                    <ul style={{ margin: "0 0 18px", paddingLeft: 52, display: "flex", flexDirection: "column", gap: 8 }}>
+                      {exp.bullets.map((b, j) => (
+                        <li key={j} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.88rem", lineHeight: 1.75, color: "#6a4c58", fontWeight: 400, paddingLeft: 4 }}>{b}</li>
+                      ))}
+                    </ul>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 7, paddingLeft: 52 }}>
+                      {exp.tags.map((t) => <span key={t} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", background: "rgba(139,94,74,0.12)", color: "#5a2d1a", padding: "3px 12px", borderRadius: "100px" }}>{t}</span>)}
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* SOCIALS */}
         <section id="socials" style={{ padding: "100px 5vw", backgroundColor: "#ffddea", backgroundImage: "radial-gradient(circle, #ffb6d1 3.5px, transparent 3.5px)", backgroundSize: "52px 52px", borderTop: "1px solid #f0d8de" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
