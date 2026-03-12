@@ -36,7 +36,7 @@ const projects = [
 const socials = [
   { name: "LinkedIn", handle: "@katiejhsu", href: "https://www.linkedin.com/in/katiejhsu/", emoji: "💼", desc: "Let's connect professionally" },
   { name: "Instagram", handle: "@katiejhsu", href: "https://www.instagram.com/katiejhsu/", emoji: "📸", desc: "Follow my adventures" },
-  { name: "GitHub", handle: "@katiejhsu", href: "#", emoji: "🐙", desc: "Check out my code" },
+  { name: "GitHub", handle: "@katiejhsu", href: "https://github.com/katiejhsu", emoji: "🐙", desc: "Check out my code" },
   { name: "Email", handle: "katiejhsu@gmail.com", href: "mailto:katiejhsu@gmail.com", emoji: "✉️", desc: "Shoot me a message" },
 ];
 
