@@ -4,6 +4,10 @@ import beachImg from "./assets/beach.jpeg";
 import dunesImg from "./assets/dunes.jpeg";
 import seattleImg from "./assets/seattle.jpg";
 import valleyImg from "./assets/valley.jpg";
+import paddleImg from "./assets/paddle.jpg";
+import hikingImg from "./assets/hiking.jpg";
+import trailImg from "./assets/trail.jpg";
+import swimImg from "./assets/swim.jpg";
 
 const PHOTO_URLS = [
   beachImg,
@@ -21,12 +25,12 @@ const skills = {
 };
 
 const projects = [
-  { title: "Mood Diary", subtitle: "Full Stack Web App", desc: "A full-stack mood sharing web application with friends featuring Azure authentication, WebSockets for real-time interaction, and a MongoDB backend.", tags: ["MongoDB", "WebSockets", "Azure"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/Mood-Diary" }, { label: "Live Demo", href: "https://final-project-group5-its0.onrender.com/" }], emoji: "🌸" },
-  { title: "Analyzing Netflix", subtitle: "RShiny App", desc: "An interactive RShiny application featuring statistical analysis of genre trends and content performance using a consolidated dataset of 1,700+ entries.", tags: ["R", "RShiny", "Statistics"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/AnalyzingNetflix" }, { label: "Live Demo", href: "https://analyzingnetflix.shinyapps.io/analyzingNetflix/" }], emoji: "📊" },
-  { title: "Global Hunger & Food Needs Database", subtitle: "SQL", desc: "A relational database utilizing 9 interconnected tables and complex SQL queries to analyze global land use and sustainability insights.", tags: ["SQL", "Database Design", "Sustainability"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/INFO-330-Project" }], emoji: "🌿" },
-  { title: "Solar Power Generation Efficiency Analysis", subtitle: "Python", desc: "A Python-based analysis of three distinct datasets using pandas and plotly to visualize power generation trends through dynamic charts.", tags: ["Python", "pandas", "plotly"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/Solar-Power-Generation-Efficiency-Analysis" }], emoji: "☀️" },
-  { title: "Husky Maps", subtitle: "2nd Place Hackathon Project", desc: "An award-winning navigation API that utilizes a modified Dijkstra's algorithm to calculate optimal campus paths based on real-time building access.", tags: ["Algorithms", "APIs", "Hackathon"], links: [{ label: "Hackathon Page", href: "https://devpost.com/software/husky-maps" }], emoji: "🗺️" },
-  { title: "Analyzing Social & Demographic Influences on Income", subtitle: "R & Power BI", desc: "An end-to-end statistical analysis using multiple linear regression in R and an interactive Power BI dashboard with automated ETL pipelines and dynamic slicers.", tags: ["R", "Power BI", "Machine Learning", "ETL"], links: [{ label: "R Git Repo", href: "https://github.com/katiejhsu/Analyzing-Social-and-Demographic-Influences-on-Income" }, { label: "Power BI Git Repo", href: "https://github.com/katiejhsu/PowerBI-Dashboard-Analyzing-Sociodemographic-Influences-on-Income-.git" }], emoji: "📈" },
+  { title: "Mood Diary", subtitle: "Full Stack Web App", desc: "A full-stack mood sharing web application with friends featuring Azure authentication, WebSockets for real-time interaction, and a MongoDB backend.", tags: ["MongoDB", "WebSockets", "Azure"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/Mood-Diary" }, { label: "Live Demo", href: "https://final-project-group5-its0.onrender.com/" }], emoji: "🌸", categories: ["fullstack", "database"] },
+  { title: "Analyzing Netflix", subtitle: "RShiny App", desc: "An interactive RShiny application featuring statistical analysis of genre trends and content performance using a consolidated dataset of 1,700+ entries.", tags: ["R", "RShiny", "Statistics"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/AnalyzingNetflix" }, { label: "Live Demo", href: "https://analyzingnetflix.shinyapps.io/analyzingNetflix/" }], emoji: "📊", categories: ["datascience"] },
+  { title: "Global Hunger & Food Needs Database", subtitle: "SQL", desc: "A relational database utilizing 9 interconnected tables and complex SQL queries to analyze global land use and sustainability insights.", tags: ["SQL", "Database Design", "Sustainability"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/INFO-330-Project" }], emoji: "🌿", categories: ["database"] },
+  { title: "Solar Power Generation Efficiency Analysis", subtitle: "Python", desc: "A Python-based analysis of three distinct datasets using pandas and plotly to visualize power generation trends through dynamic charts.", tags: ["Python", "pandas", "plotly"], links: [{ label: "Git Repo", href: "https://github.com/katiejhsu/Solar-Power-Generation-Efficiency-Analysis" }], emoji: "☀️", categories: ["datascience"] },
+  { title: "Husky Maps", subtitle: "2nd Place Hackathon Project", desc: "An award-winning navigation API that utilizes a modified Dijkstra's algorithm to calculate optimal campus paths based on real-time building access.", tags: ["Algorithms", "APIs", "Hackathon"], links: [{ label: "Hackathon Page", href: "https://devpost.com/software/husky-maps" }], emoji: "🗺️", categories: ["fullstack"] },
+  { title: "Analyzing Social & Demographic Influences on Income", subtitle: "R & Power BI", desc: "An end-to-end statistical analysis using multiple linear regression in R and an interactive Power BI dashboard with automated ETL pipelines and dynamic slicers.", tags: ["R", "Power BI", "Machine Learning", "ETL"], links: [{ label: "R Git Repo", href: "https://github.com/katiejhsu/Analyzing-Social-and-Demographic-Influences-on-Income" }, { label: "Power BI Git Repo", href: "https://github.com/katiejhsu/PowerBI-Dashboard-Analyzing-Sociodemographic-Influences-on-Income-.git" }], emoji: "📈", categories: ["datascience"] },
 ];
 
 const socials = [
@@ -54,7 +58,7 @@ function useScrollSpy(ids) {
   return activeId;
 }
 
-function EnvelopeScreen({ onOpen, isClosing }) {
+function EnvelopeScreen({ onOpen, isClosing, hasVisited }) {
   const [phase, setPhase] = useState("idle");
   const [pos, setPos] = useState(null); // null = centered via flex
   const [dragging, setDragging] = useState(false);
@@ -178,10 +182,13 @@ function EnvelopeScreen({ onOpen, isClosing }) {
         </div>
       )}
       
-      {/* Made with text — shown below envelope when centered */}
+      {/* Made with / thanks for visiting text — shown below envelope when centered */}
       {!pos && (
         <div className="intro-text" style={{ position: "absolute", bottom: 120, fontFamily: "Cormorant Garamond, Georgia, serif", fontSize: "clamp(1.9rem, 5vw, 2.6rem)", color: "#c4778a", textAlign: "center", fontWeight: 300 }}>
-          <em>made with </em><span style={{ fontSize: "clamp(1.9rem, 5vw, 2.6rem)", verticalAlign: "middle", display: "inline-block", lineHeight: 1 }}>🩷</span>
+          {hasVisited
+            ? <em>thanks for visiting! 🩷</em>
+            : <><em>made with </em><span style={{ fontSize: "clamp(1.9rem, 5vw, 2.6rem)", verticalAlign: "middle", display: "inline-block", lineHeight: 1 }}>🩷</span></>
+          }
         </div>
       )}
 
@@ -244,13 +251,13 @@ function EnvelopeScreen({ onOpen, isClosing }) {
 
           {/* Wax seal - heart shape */}
           <g filter="url(#sealShadow)">
-            <path d={`M ${envW/2} ${envH/2+32}
-              C ${envW/2} ${envH/2+32} ${envW/2-34} ${envH/2+16} ${envW/2-34} ${envH/2+2}
-              C ${envW/2-34} ${envH/2-14} ${envW/2-22} ${envH/2-22} ${envW/2} ${envH/2-8}
-              C ${envW/2+22} ${envH/2-22} ${envW/2+34} ${envH/2-14} ${envW/2+34} ${envH/2+2}
-              C ${envW/2+34} ${envH/2+16} ${envW/2} ${envH/2+32} ${envW/2} ${envH/2+32} Z`}
+            <path d={`M ${envW/2} ${envH/2+30}
+              C ${envW/2-4} ${envH/2+26} ${envW/2-28} ${envH/2+14} ${envW/2-28} ${envH/2}
+              C ${envW/2-28} ${envH/2-14} ${envW/2-18} ${envH/2-22} ${envW/2} ${envH/2-10}
+              C ${envW/2+18} ${envH/2-22} ${envW/2+28} ${envH/2-14} ${envW/2+28} ${envH/2}
+              C ${envW/2+28} ${envH/2+14} ${envW/2+4} ${envH/2+26} ${envW/2} ${envH/2+30} Z`}
               fill="url(#sealGrad)" />
-            <text x={envW/2} y={envH/2+14} textAnchor="middle" fontFamily="Cormorant Garamond, Georgia, serif" fontSize="18" fontStyle="italic" fontWeight="400" fill="rgba(255,255,255,0.9)" style={{ pointerEvents: "none" }}>K</text>
+            <text x={envW/2} y={envH/2+12} textAnchor="middle" fontFamily="Cormorant Garamond, Georgia, serif" fontSize="18" fontStyle="italic" fontWeight="400" fill="rgba(255,255,255,0.9)" style={{ pointerEvents: "none" }}>K</text>
           </g>
 
           {/* Flap — rendered on top */}
@@ -542,13 +549,32 @@ function PolaroidGallery() {
   );
 }
 
-function DraggableEnvButton({ onBack }) {
-  const [pos, setPos] = useState({ x: window.innerWidth - 120, y: window.innerHeight - 80 });
+function useDraggableFloating(initialX, initialY, size) {
+  const [pos, setPos] = useState({ x: initialX, y: initialY });
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [hasDragged, setHasDragged] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const userHasDragged = useRef(false); // tracks if user ever manually moved it
+  const initialYRef = useRef(initialY);
   const ref = useRef(null);
+
+  const clamp = useCallback((x, y) => ({
+    x: Math.min(Math.max(x, 0), window.innerWidth - size),
+    y: Math.min(Math.max(y, 0), window.innerHeight - size),
+  }), [size]);
+
+  // On resize: snap back to right edge if user hasn't dragged, otherwise just clamp
+  useEffect(() => {
+    const onResize = () => {
+      if (!userHasDragged.current) {
+        setPos({ x: window.innerWidth - 80, y: initialYRef.current });
+      } else {
+        setPos(p => clamp(p.x, p.y));
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [clamp]);
 
   const onMouseDown = (e) => {
     e.preventDefault();
@@ -562,13 +588,24 @@ function DraggableEnvButton({ onBack }) {
     if (!dragging) return;
     const onMove = (e) => {
       setHasDragged(true);
-      setPos({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+      userHasDragged.current = true;
+      setPos(clamp(e.clientX - offset.x, e.clientY - offset.y));
     };
     const onUp = () => setDragging(false);
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
     return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
-  }, [dragging, offset]);
+  }, [dragging, offset, clamp]);
+
+  return { pos, dragging, hasDragged, ref, onMouseDown };
+}
+
+function DraggableEnvButton({ onBack }) {
+  const size = 70;
+  const { pos, dragging, hasDragged, ref, onMouseDown } = useDraggableFloating(
+    window.innerWidth - 80, window.innerHeight - 80, size
+  );
+  const [hovered, setHovered] = useState(false);
 
   return (
     <div
@@ -615,15 +652,172 @@ function DraggableEnvButton({ onBack }) {
   );
 }
 
+// FitTextLines: each line fills the container width, but the whole block is also
+// capped so every line fits within the container height — no scroll ever.
+function FitTextLines({ lines, style }) {
+  const containerRef = useRef(null);
+  const measureRef = useRef(null);
+  const [fontSizes, setFontSizes] = useState([]);
+  const LINE_HEIGHT = 1.1;
+
+  useEffect(() => {
+    const measure = () => {
+      const container = containerRef.current;
+      const ruler = measureRef.current;
+      if (!container || !ruler) return;
+
+      const containerW = container.offsetWidth;
+      const containerH = container.offsetHeight;
+
+      // Step 1: for each line, find the font-size that fills the width
+      const widthBasedSizes = lines.map((line) => {
+        ruler.style.fontSize = "100px";
+        ruler.style.whiteSpace = "nowrap";
+      const plainText = line.map(seg => {
+          if (typeof seg === "string") return seg;
+          // Keyword components have a `word` prop; fallback to children
+          return seg.props?.word ?? seg.props?.children ?? "";
+        }).join("");
+        ruler.textContent = plainText;
+        const lineW = ruler.scrollWidth;
+        return (containerW / lineW) * 100;
+      });
+
+      // Step 2: check if all lines fit in the container height at these sizes
+      // Total height = sum of (fontSize * LINE_HEIGHT) for all lines
+      const totalH = widthBasedSizes.reduce((sum, fs) => sum + fs * LINE_HEIGHT, 0);
+
+      let finalSizes = widthBasedSizes;
+      if (containerH > 0 && totalH > containerH) {
+        // Scale all sizes down proportionally so they fit the height
+        const scale = containerH / totalH;
+        finalSizes = widthBasedSizes.map(fs => fs * scale);
+      }
+
+      setFontSizes(finalSizes.map(fs => Math.floor(fs)));
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [lines]);
+
+  return (
+    <div ref={containerRef} style={{ width: "100%", height: "100vh", overflow: "hidden" }}>
+      <div ref={measureRef} style={{ position: "absolute", visibility: "hidden", pointerEvents: "none", fontFamily: style?.fontFamily, fontWeight: style?.fontWeight, fontStyle: style?.fontStyle, letterSpacing: style?.letterSpacing }} />
+      {lines.map((line, i) => (
+        <div key={i} style={{ ...style, fontSize: (fontSizes[i] || 16) + "px", whiteSpace: "nowrap", lineHeight: LINE_HEIGHT, display: "block", width: "100%" }}>
+          {line}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const FILTERS = [
+  { id: "all", label: "All" },
+  { id: "fullstack", label: "Full-Stack Web Development" },
+  { id: "datascience", label: "Data Science & Analytics" },
+  { id: "database", label: "Database Systems & Engineering" },
+];
+
+function ProjectsWithFilter() {
+  const [activeFilter, setActiveFilter] = useState("all");
+  const filtered = activeFilter === "all"
+    ? projects
+    : projects.filter(p => p.categories.includes(activeFilter));
+
+  return (
+    <>
+      {/* Filter buttons */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 40 }}>
+        {FILTERS.map(f => (
+          <button
+            key={f.id}
+            onClick={() => setActiveFilter(f.id)}
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "0.78rem",
+              fontWeight: 500,
+              letterSpacing: "0.03em",
+              padding: "8px 20px",
+              borderRadius: "100px",
+              border: activeFilter === f.id ? "none" : "1.5px solid #e8a0b0",
+              background: activeFilter === f.id ? "#e8a0b0" : "transparent",
+              color: activeFilter === f.id ? "#fff" : "#c4778a",
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={e => { if (activeFilter !== f.id) { e.currentTarget.style.background = "#fce8ed"; } }}
+            onMouseLeave={e => { if (activeFilter !== f.id) { e.currentTarget.style.background = "transparent"; } }}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Project grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 24, gridAutoRows: "1fr" }}>
+        {filtered.map((p, i) => (
+          <ScrollReveal key={p.title} delay={i * 80} direction="up" threshold={0.1} style={{ height: "100%" }}>
+            <div className="project-card" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+              <div style={{ fontSize: "2rem", marginBottom: 14, height: "2.5rem" }}>{p.emoji}</div>
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#b08090", fontWeight: 500, marginBottom: 6, minHeight: "1.2em" }}>{p.subtitle}</div>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 500, color: "#3a2a2e", marginBottom: 12, minHeight: "3em", display: "flex", alignItems: "flex-start" }}>{p.title}</h3>
+              <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.88rem", lineHeight: 1.75, color: "#6a4c58", fontWeight: 400, marginBottom: 18, flex: 1 }}>{p.desc}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 20 }}>
+                {p.tags.map((t) => <span key={t} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", background: "rgba(168,213,176,0.2)", color: "#3a6047", padding: "3px 12px", borderRadius: "100px" }}>{t}</span>)}
+              </div>
+              <div style={{ display: "flex", gap: 18 }}>
+                {p.links.map((l) => <a key={l.label} href={l.href} className="proj-link" target="_blank" rel="noreferrer">{l.label} →</a>)}
+              </div>
+            </div>
+          </ScrollReveal>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function FunZoneModal({ onClose }) {
+  const [hoveredKeyword, setHoveredKeyword] = useState(null);
+
+  const keywordImages = {
+    paddleboarding: paddleImg,
+    hiking: hikingImg,
+    "trail running": trailImg,
+    swimming: swimImg,
+  };
+
+  const activeImg = hoveredKeyword ? keywordImages[hoveredKeyword] : null;
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const Keyword = ({ word, id }) => (
+    <span
+      onMouseEnter={() => setHoveredKeyword(id)}
+      onMouseLeave={() => setHoveredKeyword(null)}
+      style={{
+        color: hoveredKeyword === id ? "#fff" : "#fce8ed",
+        textDecoration: "underline",
+        textUnderlineOffset: "4px",
+        textDecorationColor: "rgba(252,232,237,0.5)",
+        cursor: "default",
+        transition: "color 0.2s",
+      }}
+    >
+      {word}
+    </span>
+  );
+
   return (
     <div
-      onClick={onClose}
       style={{
         position: "fixed", inset: 0, zIndex: 500,
-        background: "rgba(252,232,237,0.72)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         animation: "fadeInUp 0.35s cubic-bezier(.16,1,.3,1) both",
       }}
@@ -631,72 +825,134 @@ function FunZoneModal({ onClose }) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: "#fff",
-          border: "1.5px solid #f0d8de",
-          borderRadius: 28,
-          padding: "52px 48px 48px",
-          maxWidth: 520,
-          width: "calc(100vw - 48px)",
-          boxShadow: "0 32px 80px rgba(180,120,140,0.18)",
+          width: "100vw",
+          height: "100vh",
+          overflow: "hidden",
           position: "relative",
           animation: "fadeInUp 0.4s cubic-bezier(.16,1,.3,1) both",
+          display: "flex",
         }}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: "absolute", top: 20, right: 20,
-            background: "none", border: "none", cursor: "pointer",
-            fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
-            color: "#b08090", letterSpacing: "0.04em", textTransform: "uppercase",
-            padding: "6px 12px", borderRadius: 100,
-            transition: "background 0.2s",
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = "#fce8ed"}
-          onMouseLeave={e => e.currentTarget.style.background = "none"}
-        >
-          close ✕
-        </button>
+        {/* LEFT HALF — dark pink bg, light pink text, fills exactly 50vw × 100vh */}
+        <div style={{
+          width: "50vw",
+          height: "100vh",
+          background: "#c4556e",
+          padding: 0,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          overflow: "hidden",
+          flexShrink: 0,
+          position: "sticky",
+          top: 0,
+          alignSelf: "flex-start",
+        }}>
+          <FitTextLines
+            style={{
+              fontFamily: "Cormorant Garamond, Georgia, serif",
+              fontWeight: 400,
+              fontStyle: "italic",
+              letterSpacing: "0.01em",
+              color: "#fce8ed",
+            }}
+            lines={[
+              ["when i'm not"],
+              ["creating websites"],
+              ["or playing with"],
+              ["data, i'm either"],
+              ["out ", <Keyword key="pb" word="paddleboarding" id="paddleboarding" />],
+              ["or ", <Keyword key="sw" word="swimming" id="swimming" />],
+              ["or ", <Keyword key="hk" word="hiking" id="hiking" />],
+              ["or doing yoga"],
+              ["or ", <Keyword key="tr" word="trail running" id="trail running" />],
+            ]}
+          />
+        </div>
 
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 10 }}>just for fun</p>
-        <h2 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif", marginBottom: 8 }}>
-          <em style={{ color: "#c4778a" }}>katie's korner ✨</em>
-        </h2>
-        <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "16px 0 32px", borderRadius: 2 }} />
-        <HeartClicker />
+        {/* RIGHT HALF — photo viewer */}
+        <div style={{
+          flex: 1,
+          maxHeight: "100vh",
+          background: "#fff",
+          padding: "32px 48px",
+          boxSizing: "border-box",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "scroll",
+          position: "relative",
+        }}>
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            style={{
+              position: "absolute", top: 20, right: 20,
+              background: "none", border: "none", cursor: "pointer",
+              fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
+              color: "#b08090", letterSpacing: "0.04em", textTransform: "uppercase",
+              padding: "6px 12px", borderRadius: 100,
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "#fce8ed"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}
+          >
+            close ✕
+          </button>
+
+          <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 10 }}>just for fun</p>
+          <h2 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif", marginBottom: 8 }}>
+            <em style={{ color: "#c4778a" }}>get to know me a little more! ✨</em>
+          </h2>
+          <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "16px 0 28px", borderRadius: 2 }} />
+
+          {/* Photo viewer — resizes to natural image dimensions */}
+          <div style={{
+            borderRadius: 20,
+            background: "#fce8ed",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 200,
+          }}>
+            {activeImg ? (
+              <img
+                key={hoveredKeyword}
+                src={activeImg}
+                alt={hoveredKeyword}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  display: "block",
+                  borderRadius: 20,
+                  animation: "fadeInUp 0.3s ease both",
+                }}
+              />
+            ) : (
+              <p style={{
+                fontFamily: "Cormorant Garamond, Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "1.2rem",
+                color: "#c4778a",
+                textAlign: "center",
+                padding: "32px 24px",
+              }}>
+                hover over a keyword ←
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 function FloatingShavedIceButton({ onClick }) {
-  const [pos, setPos] = useState({ x: window.innerWidth - 120, y: window.innerHeight - 240 });
-  const [dragging, setDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [hasDragged, setHasDragged] = useState(false);
+  const size = 60;
+  const { pos, dragging, hasDragged, ref, onMouseDown } = useDraggableFloating(
+    window.innerWidth - 80, window.innerHeight - 240, size
+  );
   const [hovered, setHovered] = useState(false);
-  const ref = useRef(null);
-
-  const onMouseDown = (e) => {
-    e.preventDefault();
-    const rect = ref.current.getBoundingClientRect();
-    setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-    setDragging(true);
-    setHasDragged(false);
-  };
-
-  useEffect(() => {
-    if (!dragging) return;
-    const onMove = (e) => {
-      setHasDragged(true);
-      setPos({ x: e.clientX - offset.x, y: e.clientY - offset.y });
-    };
-    const onUp = () => setDragging(false);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
-  }, [dragging, offset]);
 
   return (
     <div
@@ -729,21 +985,18 @@ function FloatingShavedIceButton({ onClick }) {
           border: "1.5px solid #f9c8d4",
           borderRadius: 10,
           padding: "6px 14px",
-          fontFamily: "Cormorant Garamond, Georgia, serif",
-          fontSize: "1rem",
-          fontStyle: "italic",
-          fontWeight: 500,
-          color: "#c4778a",
+          fontSize: "1.4rem",
           whiteSpace: "nowrap",
           boxShadow: "0 4px 16px rgba(196,119,138,0.15)",
           pointerEvents: "none",
         }}>
-          fun zone ✨
+          🤭
         </div>
       )}
     </div>
   );
 }
+
 
 function HeartClicker() {
   const [count, setCount] = useState(0);
@@ -981,28 +1234,30 @@ function SkillCarousel() {
         .skill-exit-back  { animation: slideOutRight 0.42s cubic-bezier(.4,0,.2,1) both; }
       `}</style>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         {/* Left arrow */}
-        <button onClick={() => go(-1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 34, height: 34, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+        <button onClick={() => go(-1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 30, height: 30, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
           onMouseEnter={e => { e.currentTarget.style.background = "#e8a0b0"; e.currentTarget.style.color = "#fff"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#c4778a"; }}>‹</button>
 
-        {/* Card stage */}
+        {/* Card stage — two cards side by side */}
         <div style={{ flex: 1, position: "relative", height: 160, overflow: "hidden" }}>
-          {/* Exiting card */}
+          {/* Exiting pair */}
           {prev !== null && (
-            <div key={`exit-${prev}`} className={dir === 1 ? "skill-exit-fwd" : "skill-exit-back"} style={{ position: "absolute", inset: 0 }}>
-              <SkillCard card={SKILL_CARDS[prev]} />
+            <div key={`exit-${prev}`} className={dir === 1 ? "skill-exit-fwd" : "skill-exit-back"} style={{ position: "absolute", inset: 0, display: "flex", gap: 8 }}>
+              <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[prev]} /></div>
+              <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[(prev + 1) % total]} /></div>
             </div>
           )}
-          {/* Entering card */}
-          <div key={`enter-${active}`} className={animating ? (dir === 1 ? "skill-enter-fwd" : "skill-enter-back") : ""} style={{ position: "absolute", inset: 0 }}>
-            <SkillCard card={SKILL_CARDS[active]} />
+          {/* Entering pair */}
+          <div key={`enter-${active}`} className={animating ? (dir === 1 ? "skill-enter-fwd" : "skill-enter-back") : ""} style={{ position: "absolute", inset: 0, display: "flex", gap: 8 }}>
+            <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[active]} /></div>
+            <div style={{ flex: 1 }}><SkillCard card={SKILL_CARDS[(active + 1) % total]} /></div>
           </div>
         </div>
 
         {/* Right arrow */}
-        <button onClick={() => go(1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 34, height: 34, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+        <button onClick={() => go(1)} style={{ flexShrink: 0, background: "none", border: "1.5px solid #e8a0b0", borderRadius: "100%", width: 30, height: 30, cursor: "pointer", color: "#c4778a", fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
           onMouseEnter={e => { e.currentTarget.style.background = "#e8a0b0"; e.currentTarget.style.color = "#fff"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#c4778a"; }}>›</button>
       </div>
@@ -1025,10 +1280,10 @@ function SkillCarousel() {
 
 function SkillCard({ card }) {
   return (
-    <div style={{ width: "100%", height: "100%", background: "#fff", border: "1.5px solid #e8a0b0", borderRadius: 18, padding: "20px 24px", boxShadow: "0 8px 28px rgba(180,120,140,0.13)", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
-      <div style={{ fontSize: "1.8rem", marginBottom: 10 }}>{card.emoji}</div>
-      <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.82rem", color: "#5d9970", marginBottom: 8, letterSpacing: "0.01em" }}>{card.label}</div>
-      <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", lineHeight: 1.65, color: "#7a5060", margin: 0 }}>{card.desc}</p>
+    <div style={{ width: "100%", height: "100%", background: "#fff", border: "1.5px solid #e8a0b0", borderRadius: 18, padding: "16px 18px", boxShadow: "0 8px 28px rgba(180,120,140,0.13)", display: "flex", flexDirection: "column", justifyContent: "center", boxSizing: "border-box" }}>
+      <div style={{ fontSize: "1.6rem", marginBottom: 8 }}>{card.emoji}</div>
+      <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.78rem", color: "#5d9970", marginBottom: 6, letterSpacing: "0.01em" }}>{card.label}</div>
+      <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.76rem", lineHeight: 1.6, color: "#7a5060", margin: 0 }}>{card.desc}</p>
     </div>
   );
 }
@@ -1037,12 +1292,14 @@ function SkillCard({ card }) {
 export default function Portfolio() {
   const [opened, setOpened] = useState(false);
   const [envelopeClosing, setEnvelopeClosing] = useState(false);
+  const [hasVisited, setHasVisited] = useState(false);
   const [funZoneOpen, setFunZoneOpen] = useState(false);
   const activeSection = useScrollSpy(NAV_LINKS.map((n) => n.toLowerCase()));
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
   const handleBack = () => {
     setEnvelopeClosing(true);
+    setHasVisited(true);
     setTimeout(() => {
       setOpened(false);
       setEnvelopeClosing(false);
@@ -1129,7 +1386,7 @@ export default function Portfolio() {
         .heart-photo-wrap { animation: heartPulse 4s ease-in-out infinite; }
       `}</style>
 
-      {(!opened || envelopeClosing) && <EnvelopeScreen onOpen={() => { window.scrollTo({ top: 0 }); setOpened(true); }} isClosing={envelopeClosing} />}
+      {(!opened || envelopeClosing) && <EnvelopeScreen onOpen={() => { window.scrollTo({ top: 0 }); setOpened(true); }} isClosing={envelopeClosing} hasVisited={hasVisited} />}
 
       {opened && <DraggableEnvButton onBack={handleBack} />}
       {opened && <FloatingShavedIceButton onClick={() => setFunZoneOpen(true)} />}
@@ -1141,7 +1398,7 @@ export default function Portfolio() {
 
         <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", zIndex: 100, display: "flex", alignItems: "stretch", gap: 12, width: "calc(100vw - 48px)", maxWidth: 1200 }}>
           {/* Logo pill - separate from nav */}
-          <button onClick={() => scrollTo("home")} style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid #f0d8de", borderRadius: "100px", padding: "10px 20px", boxShadow: "0 8px 32px rgba(180,120,140,0.12)", cursor: "pointer", fontFamily: "Cormorant Garamond, Georgia, serif", fontSize: "1.2rem", fontWeight: 600, color: "#c4778a", letterSpacing: "0.01em", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center" }}>k.h.</button>
+          <button onClick={() => scrollTo("home")} style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid #f0d8de", borderRadius: "100px", padding: "10px 20px", boxShadow: "0 8px 32px rgba(180,120,140,0.12)", cursor: "pointer", fontFamily: "Cormorant Garamond, Georgia, serif", fontSize: "1.2rem", fontWeight: 600, color: "#c4778a", letterSpacing: "0.01em", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center" }}>katie hsu</button>
           {/* Nav pill - fills remaining space, hearts right-aligned with fixed gap */}
           <nav style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid #f0d8de", borderRadius: "100px", padding: "10px 20px", boxShadow: "0 8px 32px rgba(180,120,140,0.12)", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px", flex: 1 }}>
             {NAV_LINKS.map((link) => (
@@ -1226,29 +1483,11 @@ export default function Portfolio() {
             <ScrollReveal delay={0}>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }}>things i've built</p>
               <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)", fontWeight: 300, lineHeight: 1.1, fontFamily: "Cormorant Garamond, Georgia, serif" }}>Featured<br /><em style={{ color: "#c4778a" }}>Projects</em></h2>
-              <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "20px 0 40px", borderRadius: 2 }} />
+              <div style={{ width: 60, height: 2, background: "#e8a0b0", margin: "20px 0 32px", borderRadius: 2 }} />
+              <ProjectsWithFilter />
             </ScrollReveal>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 24, gridAutoRows: "1fr" }}>
-              {projects.map((p, i) => (
-                <ScrollReveal key={p.title} delay={i * 80} direction="up" threshold={0.1} style={{ height: "100%" }}>
-                  <div className="project-card" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                    <div style={{ fontSize: "2rem", marginBottom: 14 }}>{p.emoji}</div>
-                    <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.04em", textTransform: "uppercase", color: "#b08090", fontWeight: 500, marginBottom: 6 }}>{p.subtitle}</div>
-                    <h3 style={{ fontSize: "1.25rem", fontWeight: 500, color: "#3a2a2e", marginBottom: 12 }}>{p.title}</h3>
-                    <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.88rem", lineHeight: 1.75, color: "#6a4c58", fontWeight: 400, marginBottom: 18, flex: 1 }}>{p.desc}</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 20 }}>
-                      {p.tags.map((t) => <span key={t} style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", background: "rgba(168,213,176,0.2)", color: "#3a6047", padding: "3px 12px", borderRadius: "100px" }}>{t}</span>)}
-                    </div>
-                    <div style={{ display: "flex", gap: 18 }}>
-                      {p.links.map((l) => <a key={l.label} href={l.href} className="proj-link" target="_blank" rel="noreferrer">{l.label} →</a>)}
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
           </div>
         </section>
-
         {/* SOCIALS */}
         <section id="socials" style={{ padding: "100px 5vw", backgroundColor: "#ffddea", backgroundImage: "radial-gradient(circle, #ffb6d1 3.5px, transparent 3.5px)", backgroundSize: "52px 52px", borderTop: "1px solid #f0d8de" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
