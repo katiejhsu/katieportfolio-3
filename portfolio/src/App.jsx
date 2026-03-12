@@ -1678,8 +1678,8 @@ export default function Portfolio() {
           <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "center" }}>
             <div>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }} className="fade-up">welcome to my portfolio</p>
-              <div style={{ position: "relative", minHeight: "clamp(200px, 28vw, 340px)", marginBottom: 24 }}>
-                <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: 0, position: "absolute", top: 0, left: 0, right: 0 }}>
+              <div style={{ marginBottom: 52 }}>
+                <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: 0 }}>
                   <span style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}>Hi, I'm</span><br />
                   <CyclingName />
                 </h1>
