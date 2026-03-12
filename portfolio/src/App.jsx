@@ -1557,7 +1557,7 @@ export default function Portfolio() {
 
         @media (max-width: 900px) {
           .home-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .home-photo-container { order: -1; min-height: 380px !important; }
+          .home-photo-container { order: -1; min-height: 380px !important; align-self: auto !important; justify-content: center !important; width: 100% !important; }
           .home-title { font-size: clamp(2.5rem, 8vw, 4rem) !important; }
           .home-divider { margin: 20px 0 40px !important; }
         }
@@ -1668,13 +1668,15 @@ export default function Portfolio() {
           <span className="sp4" style={{ position: "absolute", bottom: "12%", right: "3%", fontSize: "clamp(0.6rem, 1.5vw, 1rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp1" style={{ position: "absolute", bottom: "28%", left: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#c4778a", pointerEvents: "none" }}>✦</span>
           <span className="sp2" style={{ position: "absolute", bottom: "26%", right: "2%", fontSize: "clamp(0.5rem, 1vw, 0.8rem)", color: "#e8a0b0", pointerEvents: "none" }}>✦</span>
-          <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "center" }}>
+          <div className="home-grid" style={{ maxWidth: 1100, width: "100%", display: "grid", gridTemplateColumns: "3fr 2fr", gap: "60px", alignItems: "start" }}>
             <div>
               <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase", color: "#b08090", marginBottom: 12 }} className="fade-up">welcome to my portfolio</p>
               <div style={{ marginBottom: 52 }}>
                 <h1 className="home-title fade-up d1" style={{ fontWeight: 300, lineHeight: 1.05, letterSpacing: "-0.03em", marginBottom: 0 }}>
                   <span style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}>Hi, I'm</span><br />
-                  <CyclingName />
+                  <div style={{ height: "clamp(120px, 18vw, 220px)", overflow: "hidden" }}>
+                    <CyclingName />
+                  </div>
                 </h1>
               </div>
               <div className="fade-up d2" style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24, marginTop: 0 }}>
